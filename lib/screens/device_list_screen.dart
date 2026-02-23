@@ -337,7 +337,7 @@ class _DeviceListScreenState extends State<DeviceListScreen> {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'WLED Material 3',
+                      'WLED Expressive',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             color: Theme.of(context)
                                 .colorScheme

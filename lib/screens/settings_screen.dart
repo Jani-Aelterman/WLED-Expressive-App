@@ -157,7 +157,7 @@ class SettingsScreen extends StatelessWidget {
                     const Icon(Icons.settings_suggest, size: 48),
                     const SizedBox(height: 8),
                     Text(
-                      'WLED Material 3',
+                      'WLED Expressive',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: Theme.of(context).colorScheme.outline,
                           ),

@@ -43,7 +43,7 @@ class WledApp extends StatelessWidget {
             }
 
             return MaterialApp(
-              title: 'WLED Material 3',
+              title: 'WLED Expressive',
               debugShowCheckedModeBanner: false,
               theme: ThemeData(
                 colorScheme: lightScheme,

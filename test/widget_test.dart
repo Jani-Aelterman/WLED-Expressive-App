@@ -7,8 +7,8 @@
 
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:wled_material3/main.dart';
-import 'package:wled_material3/services/theme_service.dart';
+import 'package:wled_expressive/main.dart';
+import 'package:wled_expressive/services/theme_service.dart';
 
 void main() {
   testWidgets('App smoke test', (WidgetTester tester) async {

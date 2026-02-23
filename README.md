@@ -1,4 +1,4 @@
-# WLED Material 3 🎨💡
+# WLED Expressive 🎨💡
 
 A modern, Material 3-focused remote control app for WLED devices.
 
