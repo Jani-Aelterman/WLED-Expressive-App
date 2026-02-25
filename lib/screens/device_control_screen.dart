@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:wled_expressive/l10n/app_localizations.dart';
 import '../models/wled_device.dart';
 import '../services/wled_api_service.dart';
+import '../widgets/expressive_switch.dart';
 
 class DeviceControlScreen extends StatefulWidget {
   final WledDevice device;
@@ -157,7 +159,8 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
         widget.device.isOn = !newState;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Kon apparaat niet bereiken')),
+        SnackBar(
+            content: Text(AppLocalizations.of(context)!.deviceUnreachable)),
       );
     }
   }
@@ -233,8 +236,8 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
               Expanded(
                 child: Text(
                   newState
-                      ? 'Sync ingeschakeld — alle lampen op het netwerk synchroniseren met ${widget.device.name}'
-                      : 'Sync uitgeschakeld',
+                      ? '${AppLocalizations.of(context)!.on} — ${widget.device.name}'
+                      : AppLocalizations.of(context)!.off,
                 ),
               ),
             ],
@@ -262,7 +265,9 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Kon webinterface niet openen')),
+          SnackBar(
+              content:
+                  Text(AppLocalizations.of(context)!.webInterfaceUnreachable)),
         );
       }
     }
@@ -278,19 +283,19 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Nieuwe Preset'),
+        title: Text(AppLocalizations.of(context)!.addDeviceTitle),
         content: TextField(
           controller: nameController,
-          decoration: const InputDecoration(
-            labelText: 'Naam',
-            hintText: 'Bijv. Gezellig Avondlicht',
+          decoration: InputDecoration(
+            labelText: AppLocalizations.of(context)!.deviceNameLabel,
+            hintText: AppLocalizations.of(context)!.deviceNameHint,
           ),
           autofocus: true,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Annuleren'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           FilledButton(
             onPressed: () async {
@@ -304,7 +309,7 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
                 await _fetchPresets();
               }
             },
-            child: const Text('Opslaan'),
+            child: Text(AppLocalizations.of(context)!.save),
           ),
         ],
       ),
@@ -383,26 +388,26 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
                     _selectedIndex = index;
                   });
                 },
-                destinations: const [
+                destinations: [
                   NavigationDestination(
-                    icon: Icon(Icons.color_lens_outlined),
-                    selectedIcon: Icon(Icons.color_lens),
-                    label: 'Kleuren',
+                    icon: const Icon(Icons.color_lens_outlined),
+                    selectedIcon: const Icon(Icons.color_lens),
+                    label: AppLocalizations.of(context)!.colorTab,
                   ),
                   NavigationDestination(
-                    icon: Icon(Icons.palette_outlined),
-                    selectedIcon: Icon(Icons.palette),
-                    label: 'Paletten',
+                    icon: const Icon(Icons.palette_outlined),
+                    selectedIcon: const Icon(Icons.palette),
+                    label: AppLocalizations.of(context)!.palettesTab,
                   ),
                   NavigationDestination(
-                    icon: Icon(Icons.auto_awesome_outlined),
-                    selectedIcon: Icon(Icons.auto_awesome),
-                    label: 'Effecten',
+                    icon: const Icon(Icons.auto_awesome_outlined),
+                    selectedIcon: const Icon(Icons.auto_awesome),
+                    label: AppLocalizations.of(context)!.effectsTab,
                   ),
                   NavigationDestination(
-                    icon: Icon(Icons.favorite_border),
-                    selectedIcon: Icon(Icons.favorite),
-                    label: 'Presets',
+                    icon: const Icon(Icons.favorite_border),
+                    selectedIcon: const Icon(Icons.favorite),
+                    label: AppLocalizations.of(context)!.presetsTab,
                   ),
                 ],
               ),
@@ -435,14 +440,26 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Power Card
-          Card(
-            elevation: 0,
-            color: isOn
-                ? Theme.of(context).colorScheme.primaryContainer
-                : Theme.of(context).colorScheme.surfaceContainerHighest,
-            shape: RoundedRectangleBorder(
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeOutCirc,
+            decoration: BoxDecoration(
+              color: isOn
+                  ? Theme.of(context).colorScheme.primaryContainer
+                  : Theme.of(context).colorScheme.surfaceContainerHigh,
               borderRadius: BorderRadius.circular(24),
+              boxShadow: isOn
+                  ? [
+                      BoxShadow(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primary
+                            .withOpacity(0.4),
+                        blurRadius: 20,
+                        spreadRadius: 2,
+                      )
+                    ]
+                  : [],
             ),
             child: InkWell(
               onTap: _togglePower,
@@ -454,20 +471,28 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
                   children: [
                     Row(
                       children: [
-                        Icon(
-                          isOn ? Icons.lightbulb : Icons.lightbulb_outline,
-                          size: 32,
-                          color: isOn
-                              ? Theme.of(context).colorScheme.onPrimaryContainer
-                              : Theme.of(context).colorScheme.onSurfaceVariant,
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 300),
+                          child: Icon(
+                            isOn ? Icons.lightbulb : Icons.lightbulb_outline,
+                            key: ValueKey<bool>(isOn),
+                            size: 32,
+                            color: isOn
+                                ? Theme.of(context)
+                                    .colorScheme
+                                    .onPrimaryContainer
+                                : Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant,
+                          ),
                         ),
                         const SizedBox(width: 16),
-                        Text(
-                          isOn ? 'Aan' : 'Uit',
+                        AnimatedDefaultTextStyle(
+                          duration: const Duration(milliseconds: 300),
                           style: Theme.of(context)
                               .textTheme
-                              .headlineSmall
-                              ?.copyWith(
+                              .headlineSmall!
+                              .copyWith(
                                 color: isOn
                                     ? Theme.of(context)
                                         .colorScheme
@@ -477,12 +502,15 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
                                         .onSurfaceVariant,
                                 fontWeight: FontWeight.bold,
                               ),
+                          child: Text(isOn ? 'Aan' : 'Uit'),
                         ),
                       ],
                     ),
-                    Switch(
+                    ExpressiveSwitch(
                       value: isOn,
                       onChanged: (val) => _togglePower(),
+                      activeIcon: const Icon(Icons.power_settings_new),
+                      inactiveIcon: const Icon(Icons.power_settings_new),
                     ),
                   ],
                 ),
@@ -516,7 +544,7 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
                       value: brightness,
                       min: 1,
                       max: 255,
-                      divisions: 254,
+                      divisions: 20,
                       label: '${((brightness / 255) * 100).round()}%',
                       onChanged: _changeBrightness,
                       onChangeEnd: _changeBrightnessEnd,
@@ -525,6 +553,18 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
                   const SizedBox(width: 12),
                   Icon(Icons.brightness_high,
                       color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  const SizedBox(width: 12),
+                  SizedBox(
+                    width: 44,
+                    child: Text(
+                      '${((brightness / 255) * 100).round()}%',
+                      textAlign: TextAlign.right,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                  ),
                 ],
               ),
             ),

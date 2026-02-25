@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "wled_material3" "\0"
+            VALUE "CompanyName", "com.aelterman" "\0"
+            VALUE "FileDescription", "WLED Expressive" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "wled_material3" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2026 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "wled_material3.exe" "\0"
-            VALUE "ProductName", "wled_material3" "\0"
+            VALUE "InternalName", "wled_expressive" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2026 com.aelterman. All rights reserved." "\0"
+            VALUE "OriginalFilename", "wled_expressive.exe" "\0"
+            VALUE "ProductName", "WLED Expressive" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

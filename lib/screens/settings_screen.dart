@@ -1,25 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:wled_expressive/l10n/app_localizations.dart';
 import '../services/theme_service.dart';
+import '../services/locale_service.dart';
 
 class SettingsScreen extends StatelessWidget {
   final ThemeService themeService;
+  final LocaleService localeService;
 
-  const SettingsScreen({super.key, required this.themeService});
+  const SettingsScreen(
+      {super.key, required this.themeService, required this.localeService});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Instellingen'),
+        title: Text(l10n.settingsTitle),
         centerTitle: true,
       ),
       body: ListenableBuilder(
-        listenable: themeService,
+        listenable:
+            Listenable.merge([themeService, localeService.currentLocale]),
         builder: (context, child) {
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              _buildSectionTitle(context, 'Thema'),
+              _buildSectionTitle(context, l10n.appearanceSection),
               const SizedBox(height: 8),
               Card(
                 elevation: 0,
@@ -32,19 +39,19 @@ class SettingsScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       RadioListTile<ThemeMode>(
-                        title: const Text('Systeem'),
+                        title: Text(l10n.themeSystem),
                         value: ThemeMode.system,
                         groupValue: themeService.themeMode,
                         onChanged: (mode) => themeService.setThemeMode(mode!),
                       ),
                       RadioListTile<ThemeMode>(
-                        title: const Text('Licht'),
+                        title: Text(l10n.themeLight),
                         value: ThemeMode.light,
                         groupValue: themeService.themeMode,
                         onChanged: (mode) => themeService.setThemeMode(mode!),
                       ),
                       RadioListTile<ThemeMode>(
-                        title: const Text('Donker'),
+                        title: Text(l10n.themeDark),
                         value: ThemeMode.dark,
                         groupValue: themeService.themeMode,
                         onChanged: (mode) => themeService.setThemeMode(mode!),
@@ -54,7 +61,7 @@ class SettingsScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-              _buildSectionTitle(context, 'Kleuren'),
+              _buildSectionTitle(context, l10n.themeColor),
               const SizedBox(height: 8),
               Card(
                 elevation: 0,
@@ -65,9 +72,8 @@ class SettingsScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     SwitchListTile(
-                      title: const Text('Dynamische kleuren'),
-                      subtitle:
-                          const Text('Gebruik systeemkleuren (Android 12+)'),
+                      title: Text(l10n.dynamicColorToggle),
+                      subtitle: Text(l10n.dynamicColorSubtitle),
                       value: themeService.useDynamicColor,
                       onChanged: (value) =>
                           themeService.setUseDynamicColor(value),
@@ -79,7 +85,7 @@ class SettingsScreen extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text('Kies een accentkleur'),
+                            Text(l10n.seedColorSelection),
                             const SizedBox(height: 12),
                             Wrap(
                               spacing: 12,
@@ -150,6 +156,41 @@ class SettingsScreen extends StatelessWidget {
                   ],
                 ),
               ),
+              const SizedBox(height: 24),
+              _buildSectionTitle(context, l10n.languageSection),
+              const SizedBox(height: 8),
+              Card(
+                elevation: 0,
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Column(
+                    children: [
+                      RadioListTile<String>(
+                        title: Text(l10n.themeSystem),
+                        value: LocaleService.system,
+                        groupValue: localeService.getSelectedLocaleCode(),
+                        onChanged: (val) => localeService.updateLocale(val!),
+                      ),
+                      RadioListTile<String>(
+                        title: const Text('English'),
+                        value: LocaleService.en,
+                        groupValue: localeService.getSelectedLocaleCode(),
+                        onChanged: (val) => localeService.updateLocale(val!),
+                      ),
+                      RadioListTile<String>(
+                        title: const Text('Nederlands'),
+                        value: LocaleService.nl,
+                        groupValue: localeService.getSelectedLocaleCode(),
+                        onChanged: (val) => localeService.updateLocale(val!),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               const SizedBox(height: 32),
               Center(
                 child: Column(
@@ -157,13 +198,13 @@ class SettingsScreen extends StatelessWidget {
                     const Icon(Icons.settings_suggest, size: 48),
                     const SizedBox(height: 8),
                     Text(
-                      'WLED Expressive',
+                      l10n.appTitle,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: Theme.of(context).colorScheme.outline,
                           ),
                     ),
                     Text(
-                      'v1.0.0',
+                      l10n.version,
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
                             color: Theme.of(context).colorScheme.outline,
                           ),

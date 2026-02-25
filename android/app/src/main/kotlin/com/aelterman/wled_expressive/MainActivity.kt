@@ -1,4 +1,4 @@
-package com.example.wled_material3
+package com.aelterman.wled_expressive
 
 import io.flutter.embedding.android.FlutterActivity
 

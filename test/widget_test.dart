@@ -9,11 +9,17 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:wled_expressive/main.dart';
 import 'package:wled_expressive/services/theme_service.dart';
+import 'package:wled_expressive/services/locale_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   testWidgets('App smoke test', (WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
     final themeService = ThemeService();
-    await tester.pumpWidget(WledApp(themeService: themeService));
+    final localeService = LocaleService(prefs);
+    await tester.pumpWidget(
+        WledApp(themeService: themeService, localeService: localeService));
 
     // Verify that the app starts and shows the title
     expect(find.text('WLED'), findsOneWidget);

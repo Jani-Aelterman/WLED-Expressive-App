@@ -8,10 +8,15 @@ import 'device_control_screen.dart';
 
 import 'settings_screen.dart';
 import '../services/theme_service.dart';
+import '../services/locale_service.dart';
+import '../widgets/expressive_switch.dart';
+import 'package:wled_expressive/l10n/app_localizations.dart';
 
 class DeviceListScreen extends StatefulWidget {
   final ThemeService themeService;
-  const DeviceListScreen({super.key, required this.themeService});
+  final LocaleService localeService;
+  const DeviceListScreen(
+      {super.key, required this.themeService, required this.localeService});
 
   @override
   State<DeviceListScreen> createState() => _DeviceListScreenState();
@@ -22,6 +27,7 @@ class _DeviceListScreenState extends State<DeviceListScreen> {
   bool isLoading = true;
   bool isDiscovering = false;
   double _globalBrightness = 128;
+  WledDevice? _selectedDevice;
 
   @override
   void initState() {
@@ -151,23 +157,23 @@ class _DeviceListScreenState extends State<DeviceListScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Nieuw WLED apparaat'),
+        title: Text(AppLocalizations.of(context)!.addDeviceTitle),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: nameController,
-              decoration: const InputDecoration(
-                labelText: 'Naam (optioneel)',
-                hintText: 'Mijn Lamp',
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context)!.deviceNameLabel,
+                hintText: AppLocalizations.of(context)!.deviceNameHint,
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: ipController,
-              decoration: const InputDecoration(
-                labelText: 'IP Adres',
-                hintText: '192.168.x.x',
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context)!.deviceIpLabel,
+                hintText: AppLocalizations.of(context)!.deviceIpHint,
               ),
               keyboardType:
                   const TextInputType.numberWithOptions(decimal: true),
@@ -177,7 +183,7 @@ class _DeviceListScreenState extends State<DeviceListScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Annuleren'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           FilledButton(
             onPressed: () {
@@ -258,24 +264,26 @@ class _DeviceListScreenState extends State<DeviceListScreen> {
     _saveDevices();
   }
 
-  Future<void> _turnAllOff() async {
+  Future<void> _toggleAllPower(bool turnOn) async {
     if (devices.isEmpty) return;
 
     setState(() {
-      // Optimistic update: alles lokaal uitzetten
       for (final d in devices) {
-        d.isOn = false;
+        d.isOn = turnOn;
       }
     });
 
     for (final device in devices) {
-      // Alleen proberen als er een IP is; fouten negeren zodat de rest verder gaat
-      await WledApiService.togglePower(device.ip, false);
+      await WledApiService.togglePower(device.ip, turnOn);
     }
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Alle apparaten worden uitgeschakeld')),
+        SnackBar(
+          content: Text(turnOn
+              ? 'Alle apparaten worden ingeschakeld'
+              : 'Alle apparaten worden uitgeschakeld'),
+        ),
       );
     }
   }
@@ -359,14 +367,15 @@ class _DeviceListScreenState extends State<DeviceListScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.settings),
-              title: const Text('Instellingen'),
+              title: Text(AppLocalizations.of(context)!.settingsTab),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        SettingsScreen(themeService: widget.themeService),
+                    builder: (context) => SettingsScreen(
+                        themeService: widget.themeService,
+                        localeService: widget.localeService),
                   ),
                 );
               },
@@ -384,347 +393,527 @@ class _DeviceListScreenState extends State<DeviceListScreen> {
           ],
         ),
       ),
-      body: isLoading && devices.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : devices.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.lightbulb_outline,
-                          size: 64,
-                          color: Theme.of(context).colorScheme.outline),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Geen apparaten gevonden',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              color: Theme.of(context).colorScheme.outline,
-                            ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Voeg een WLED apparaat toe om te beginnen',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.outline,
-                            ),
-                      ),
-                    ],
-                  ),
-                )
-              : RefreshIndicator(
-                  onRefresh: _refreshAllDevices,
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: devices.isEmpty ? 0 : devices.length + 1,
-                    itemBuilder: (context, index) {
-                      if (index == 0) {
-                        return Card(
-                          margin: const EdgeInsets.only(bottom: 24),
-                          elevation: 0,
-                          color: Theme.of(context).colorScheme.primaryContainer,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(28),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final isWide = constraints.maxWidth >= 800;
+
+          Widget listContent = isLoading && devices.isEmpty
+              ? const Center(child: CircularProgressIndicator())
+              : devices.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.lightbulb_outline,
+                              size: 64,
+                              color: Theme.of(context).colorScheme.outline),
+                          const SizedBox(height: 16),
+                          Text(
+                            AppLocalizations.of(context)!.noDevicesTitle,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge
+                                ?.copyWith(
+                                  color: Theme.of(context).colorScheme.outline,
+                                ),
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: Column(
-                              children: [
-                                Row(
+                          const SizedBox(height: 8),
+                          Text(
+                            AppLocalizations.of(context)!.noDevicesSubtitle,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: Theme.of(context).colorScheme.outline,
+                                ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : RefreshIndicator(
+                      onRefresh: _refreshAllDevices,
+                      child: ListView.builder(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: devices.isEmpty ? 0 : devices.length + 1,
+                        itemBuilder: (context, index) {
+                          if (index == 0) {
+                            final isAnyOn =
+                                devices.any((d) => d.isOn && d.isOnline);
+
+                            return AnimatedContainer(
+                              duration: const Duration(milliseconds: 500),
+                              curve: Curves.easeOutCirc,
+                              margin: const EdgeInsets.only(bottom: 24),
+                              decoration: BoxDecoration(
+                                color: isAnyOn
+                                    ? Theme.of(context)
+                                        .colorScheme
+                                        .primaryContainer
+                                    : Theme.of(context)
+                                        .colorScheme
+                                        .surfaceContainerHighest,
+                                borderRadius: BorderRadius.circular(28),
+                                boxShadow: isAnyOn
+                                    ? [
+                                        BoxShadow(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary
+                                              .withOpacity(0.4),
+                                          blurRadius: 20,
+                                          spreadRadius: 2,
+                                        )
+                                      ]
+                                    : [],
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(20),
+                                child: Column(
                                   children: [
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Alles Bediening',
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              AnimatedDefaultTextStyle(
+                                                duration: const Duration(
+                                                    milliseconds: 300),
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleLarge!
+                                                    .copyWith(
+                                                      color: isAnyOn
+                                                          ? Theme.of(context)
+                                                              .colorScheme
+                                                              .onPrimaryContainer
+                                                          : Theme.of(context)
+                                                              .colorScheme
+                                                              .onSurface,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                child: Text(AppLocalizations.of(
+                                                        context)!
+                                                    .allControlTitle),
+                                              ),
+                                              AnimatedDefaultTextStyle(
+                                                duration: const Duration(
+                                                    milliseconds: 300),
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium!
+                                                    .copyWith(
+                                                      color: isAnyOn
+                                                          ? Theme.of(context)
+                                                              .colorScheme
+                                                              .onPrimaryContainer
+                                                              .withOpacity(0.7)
+                                                          : Theme.of(context)
+                                                              .colorScheme
+                                                              .onSurfaceVariant,
+                                                    ),
+                                                child: Text(AppLocalizations.of(
+                                                        context)!
+                                                    .allControlSubtitle),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        ExpressiveSwitch(
+                                          value: isAnyOn,
+                                          onChanged: (value) =>
+                                              _toggleAllPower(value),
+                                          activeIcon: const Icon(
+                                              Icons.power_settings_new),
+                                          inactiveIcon: const Icon(
+                                              Icons.power_settings_new),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Row(
+                                      children: [
+                                        Icon(Icons.brightness_low,
+                                            size: 20,
+                                            color: isAnyOn
+                                                ? Theme.of(context)
+                                                    .colorScheme
+                                                    .onPrimaryContainer
+                                                : Theme.of(context)
+                                                    .colorScheme
+                                                    .onSurfaceVariant),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Slider(
+                                            value: _globalBrightness,
+                                            min: 1,
+                                            max: 255,
+                                            divisions: 20,
+                                            label:
+                                                '${((_globalBrightness / 255) * 100).round()}%',
+                                            activeColor: isAnyOn
+                                                ? Theme.of(context)
+                                                    .colorScheme
+                                                    .onPrimaryContainer
+                                                : Theme.of(context)
+                                                    .colorScheme
+                                                    .primary,
+                                            inactiveColor: isAnyOn
+                                                ? Theme.of(context)
+                                                    .colorScheme
+                                                    .onPrimaryContainer
+                                                    .withOpacity(0.2)
+                                                : Theme.of(context)
+                                                    .colorScheme
+                                                    .onSurfaceVariant
+                                                    .withOpacity(0.2),
+                                            onChanged: _changeAllBrightness,
+                                            onChangeEnd:
+                                                _changeAllBrightnessEnd,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Icon(Icons.brightness_high,
+                                            size: 20,
+                                            color: isAnyOn
+                                                ? Theme.of(context)
+                                                    .colorScheme
+                                                    .onPrimaryContainer
+                                                : Theme.of(context)
+                                                    .colorScheme
+                                                    .onSurfaceVariant),
+                                        const SizedBox(width: 12),
+                                        SizedBox(
+                                          width: 44,
+                                          child: Text(
+                                            '${((_globalBrightness / 255) * 100).round()}%',
+                                            textAlign: TextAlign.right,
                                             style: Theme.of(context)
                                                 .textTheme
-                                                .titleLarge
+                                                .titleMedium
                                                 ?.copyWith(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .onPrimaryContainer,
+                                                  color: isAnyOn
+                                                      ? Theme.of(context)
+                                                          .colorScheme
+                                                          .onPrimaryContainer
+                                                      : Theme.of(context)
+                                                          .colorScheme
+                                                          .primary,
                                                   fontWeight: FontWeight.bold,
                                                 ),
                                           ),
-                                          Text(
-                                            'Alle verbonden lampen',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyMedium
-                                                ?.copyWith(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .onPrimaryContainer
-                                                      .withOpacity(0.7),
-                                                ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    IconButton.filled(
-                                      onPressed: _turnAllOff,
-                                      icon:
-                                          const Icon(Icons.power_settings_new),
-                                      style: IconButton.styleFrom(
-                                        backgroundColor:
-                                            Theme.of(context).colorScheme.error,
-                                        foregroundColor: Theme.of(context)
-                                            .colorScheme
-                                            .onError,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 16),
-                                Row(
-                                  children: [
-                                    Icon(Icons.brightness_low,
-                                        size: 20,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onPrimaryContainer),
-                                    const SizedBox(width: 12),
-                                    Expanded(
-                                      child: Slider(
-                                        value: _globalBrightness,
-                                        min: 1,
-                                        max: 255,
-                                        activeColor: Theme.of(context)
-                                            .colorScheme
-                                            .onPrimaryContainer,
-                                        inactiveColor: Theme.of(context)
-                                            .colorScheme
-                                            .onPrimaryContainer
-                                            .withOpacity(0.2),
-                                        onChanged: _changeAllBrightness,
-                                        onChangeEnd: _changeAllBrightnessEnd,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Icon(Icons.brightness_high,
-                                        size: 20,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onPrimaryContainer),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      }
-
-                      final device = devices[index - 1];
-                      return Card(
-                        margin: const EdgeInsets.only(bottom: 16),
-                        clipBehavior: Clip.antiAlias,
-                        elevation: 0,
-                        color: Theme.of(context)
-                            .colorScheme
-                            .surfaceContainerHighest,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    DeviceControlScreen(device: device),
-                              ),
-                            ).then((_) => _updateDeviceStatus(device));
-                          },
-                          onLongPress: () {
-                            showModalBottomSheet(
-                              context: context,
-                              builder: (context) => SafeArea(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    ListTile(
-                                      leading: const Icon(Icons.edit),
-                                      title: const Text(
-                                          'Bewerken & Identificeren'),
-                                      onTap: () {
-                                        Navigator.pop(context);
-                                        _showEditDeviceDialog(device);
-                                      },
-                                    ),
-                                    ListTile(
-                                      leading: Icon(Icons.delete,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .error),
-                                      title: Text('Verwijderen',
-                                          style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .error)),
-                                      onTap: () {
-                                        Navigator.pop(context);
-                                        _deleteDevice(device);
-                                      },
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
                               ),
                             );
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
-                            child: Column(
-                              children: [
-                                Row(
-                                  children: [
-                                    Container(
-                                      width: 48,
-                                      height: 48,
-                                      decoration: BoxDecoration(
-                                        color: device.isOnline
-                                            ? (device.isOn
-                                                ? Theme.of(context)
-                                                    .colorScheme
-                                                    .primary
-                                                    .withOpacity(0.2)
-                                                : Theme.of(context)
-                                                    .colorScheme
-                                                    .surfaceContainer)
-                                            : Theme.of(context)
-                                                .colorScheme
-                                                .errorContainer,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: Icon(
-                                        Icons.lightbulb,
-                                        size: 24,
-                                        color: device.isOnline
-                                            ? (device.isOn
-                                                ? Theme.of(context)
-                                                    .colorScheme
-                                                    .primary
-                                                : Theme.of(context)
-                                                    .colorScheme
-                                                    .onSurfaceVariant)
-                                            : Theme.of(context)
-                                                .colorScheme
-                                                .onErrorContainer,
-                                      ),
+                          }
+
+                          final device = devices[index - 1];
+                          return Card(
+                            margin: const EdgeInsets.only(bottom: 16),
+                            clipBehavior: Clip.antiAlias,
+                            elevation: 0,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .surfaceContainerHigh,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(24),
+                            ),
+                            child: InkWell(
+                              onTap: () {
+                                if (isWide) {
+                                  setState(() {
+                                    _selectedDevice = device;
+                                  });
+                                } else {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          DeviceControlScreen(device: device),
                                     ),
-                                    const SizedBox(width: 16),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            device.name,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .titleMedium
-                                                ?.copyWith(
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                          ),
-                                          Text(
-                                            device.isOnline
-                                                ? device.ip
-                                                : 'Offline - ${device.ip}',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall
-                                                ?.copyWith(
-                                                  color: device.isOnline
-                                                      ? Theme.of(context)
-                                                          .colorScheme
-                                                          .onSurfaceVariant
-                                                      : Theme.of(context)
-                                                          .colorScheme
-                                                          .error,
-                                                ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    if (device.isOnline)
-                                      Switch(
-                                        value: device.isOn,
-                                        onChanged: (value) async {
-                                          setState(() {
-                                            device.isOn = value;
-                                          });
-                                          final success =
-                                              await WledApiService.togglePower(
-                                                  device.ip, value);
-                                          if (!success) {
-                                            setState(() {
-                                              device.isOn = !value;
-                                            });
-                                            if (context.mounted) {
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
-                                                const SnackBar(
-                                                    content: Text(
-                                                        'Kon apparaat niet bereiken')),
-                                              );
-                                            }
-                                          }
-                                        },
-                                      ),
-                                  ],
-                                ),
-                                if (device.isOnline && device.isOn)
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 8.0),
-                                    child: Row(
+                                  ).then((_) => _updateDeviceStatus(device));
+                                }
+                              },
+                              onLongPress: () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  builder: (context) => SafeArea(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Icon(Icons.brightness_low,
-                                            size: 16,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onSurfaceVariant),
-                                        const SizedBox(width: 8),
-                                        Expanded(
-                                          child: Slider(
-                                            value: device.brightness
-                                                .toDouble()
-                                                .clamp(1.0, 255.0),
-                                            min: 1,
-                                            max: 255,
-                                            onChanged: (val) {
-                                              setState(() {
-                                                device.brightness = val.toInt();
-                                              });
-                                            },
-                                            onChangeEnd: (val) {
-                                              WledApiService.setBrightness(
-                                                  device.ip, val.toInt());
-                                            },
-                                          ),
+                                        ListTile(
+                                          leading: const Icon(Icons.edit),
+                                          title: Text(
+                                              AppLocalizations.of(context)!
+                                                  .editAndIdentify),
+                                          onTap: () {
+                                            Navigator.pop(context);
+                                            _showEditDeviceDialog(device);
+                                          },
                                         ),
-                                        const SizedBox(width: 8),
-                                        Icon(Icons.brightness_high,
-                                            size: 16,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onSurfaceVariant),
+                                        ListTile(
+                                          leading: Icon(Icons.delete,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .error),
+                                          title: Text(
+                                              AppLocalizations.of(context)!
+                                                  .delete,
+                                              style: TextStyle(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .error)),
+                                          onTap: () {
+                                            Navigator.pop(context);
+                                            _deleteDevice(device);
+                                          },
+                                        ),
                                       ],
                                     ),
                                   ),
-                              ],
+                                );
+                              },
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(20, 20, 20, 12),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Container(
+                                          width: 48,
+                                          height: 48,
+                                          decoration: BoxDecoration(
+                                            color: device.isOnline
+                                                ? (device.isOn
+                                                    ? Theme.of(context)
+                                                        .colorScheme
+                                                        .primary
+                                                        .withOpacity(0.2)
+                                                    : Theme.of(context)
+                                                        .colorScheme
+                                                        .surfaceContainer)
+                                                : Theme.of(context)
+                                                    .colorScheme
+                                                    .errorContainer,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: Icon(
+                                            Icons.lightbulb,
+                                            size: 24,
+                                            color: device.isOnline
+                                                ? (device.isOn
+                                                    ? Theme.of(context)
+                                                        .colorScheme
+                                                        .primary
+                                                    : Theme.of(context)
+                                                        .colorScheme
+                                                        .onSurfaceVariant)
+                                                : Theme.of(context)
+                                                    .colorScheme
+                                                    .onErrorContainer,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 16),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                device.name,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleMedium
+                                                    ?.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                              ),
+                                              Text(
+                                                device.isOnline
+                                                    ? device.ip
+                                                    : '${AppLocalizations.of(context)!.offline} - ${device.ip}',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodySmall
+                                                    ?.copyWith(
+                                                      color: device.isOnline
+                                                          ? Theme.of(context)
+                                                              .colorScheme
+                                                              .onSurfaceVariant
+                                                          : Theme.of(context)
+                                                              .colorScheme
+                                                              .error,
+                                                    ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        if (device.isOnline)
+                                          ExpressiveSwitch(
+                                            value: device.isOn,
+                                            onChanged: (value) async {
+                                              setState(() {
+                                                device.isOn = value;
+                                              });
+                                              final success =
+                                                  await WledApiService
+                                                      .togglePower(
+                                                          device.ip, value);
+                                              if (!success) {
+                                                setState(() {
+                                                  device.isOn = !value;
+                                                });
+                                                if (context.mounted) {
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    const SnackBar(
+                                                        content: Text(
+                                                            'Kon apparaat niet bereiken')),
+                                                  );
+                                                }
+                                              }
+                                            },
+                                            activeIcon: const Icon(
+                                                Icons.power_settings_new),
+                                            inactiveIcon: const Icon(
+                                                Icons.power_settings_new),
+                                          ),
+                                      ],
+                                    ),
+                                    if (device.isOnline && device.isOn)
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(top: 8.0),
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.brightness_low,
+                                                size: 16,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onSurfaceVariant),
+                                            const SizedBox(width: 8),
+                                            Expanded(
+                                              child: Slider(
+                                                value: device.brightness
+                                                    .toDouble()
+                                                    .clamp(1.0, 255.0),
+                                                min: 1,
+                                                max: 255,
+                                                divisions: 20,
+                                                label:
+                                                    '${((device.brightness / 255) * 100).round()}%',
+                                                onChanged: (val) {
+                                                  setState(() {
+                                                    device.brightness =
+                                                        val.toInt();
+                                                  });
+                                                },
+                                                onChangeEnd: (val) {
+                                                  WledApiService.setBrightness(
+                                                      device.ip, val.toInt());
+                                                },
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Icon(Icons.brightness_high,
+                                                size: 16,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onSurfaceVariant),
+                                            const SizedBox(width: 8),
+                                            SizedBox(
+                                              width: 36,
+                                              child: Text(
+                                                '${((device.brightness / 255) * 100).round()}%',
+                                                textAlign: TextAlign.right,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium
+                                                    ?.copyWith(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .primary,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
                             ),
+                          );
+                        },
+                      ),
+                    );
+
+          if (isWide) {
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: listContent,
+                ),
+                Container(
+                  width: 1,
+                  color: Theme.of(context)
+                      .colorScheme
+                      .outlineVariant
+                      .withOpacity(0.5),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: _selectedDevice != null
+                      ? DeviceControlScreen(
+                          key: ValueKey(_selectedDevice!.ip),
+                          device: _selectedDevice!,
+                        )
+                      : Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.important_devices_outlined,
+                                  size: 64,
+                                  color: Theme.of(context).colorScheme.outline),
+                              const SizedBox(height: 16),
+                              Text(
+                                AppLocalizations.of(context)!
+                                    .selectDeviceToControl,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge
+                                    ?.copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .outline),
+                              ),
+                            ],
                           ),
                         ),
-                      );
-                    },
-                  ),
                 ),
+              ],
+            );
+          }
+
+          return listContent;
+        },
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _showAddDeviceDialog,
         icon: const Icon(Icons.add),
-        label: const Text('Apparaat toevoegen'),
+        label: Text(AppLocalizations.of(context)!.addDeviceButton),
       ),
     );
   }
