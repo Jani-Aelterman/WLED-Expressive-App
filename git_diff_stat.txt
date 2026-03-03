@@ -1,0 +1,100 @@
+ README.md                                          |  19 +-
+ android/app/src/main/AndroidManifest.xml           |   2 +-
+ .../main/res/drawable-v21/launch_background.xml    |  15 +-
+ .../src/main/res/drawable/launch_background.xml    |  15 +-
+ .../app/src/main/res/mipmap-hdpi/ic_launcher.png   | Bin 6895 -> 7894 bytes
+ .../res/mipmap-hdpi/ic_launcher_foreground.png     | Bin 10775 -> 14006 bytes
+ .../res/mipmap-hdpi/ic_launcher_monochrome.png     | Bin 10775 -> 3551 bytes
+ .../app/src/main/res/mipmap-hdpi/launcher_icon.png | Bin 4831 -> 8208 bytes
+ .../app/src/main/res/mipmap-mdpi/ic_launcher.png   | Bin 3650 -> 4145 bytes
+ .../res/mipmap-mdpi/ic_launcher_foreground.png     | Bin 5426 -> 6583 bytes
+ .../res/mipmap-mdpi/ic_launcher_monochrome.png     | Bin 5426 -> 2028 bytes
+ .../app/src/main/res/mipmap-mdpi/launcher_icon.png | Bin 2508 -> 4138 bytes
+ .../app/src/main/res/mipmap-xhdpi/ic_launcher.png  | Bin 10403 -> 12349 bytes
+ .../res/mipmap-xhdpi/ic_launcher_foreground.png    | Bin 17687 -> 22832 bytes
+ .../res/mipmap-xhdpi/ic_launcher_monochrome.png    | Bin 17687 -> 5512 bytes
+ .../src/main/res/mipmap-xhdpi/launcher_icon.png    | Bin 7663 -> 13298 bytes
+ .../app/src/main/res/mipmap-xxhdpi/ic_launcher.png | Bin 19917 -> 24447 bytes
+ .../res/mipmap-xxhdpi/ic_launcher_foreground.png   | Bin 35665 -> 47327 bytes
+ .../res/mipmap-xxhdpi/ic_launcher_monochrome.png   | Bin 35665 -> 9043 bytes
+ .../src/main/res/mipmap-xxhdpi/launcher_icon.png   | Bin 15154 -> 26627 bytes
+ .../src/main/res/mipmap-xxxhdpi/ic_launcher.png    | Bin 31044 -> 38466 bytes
+ .../res/mipmap-xxxhdpi/ic_launcher_foreground.png  | Bin 60320 -> 75448 bytes
+ .../res/mipmap-xxxhdpi/ic_launcher_monochrome.png  | Bin 60320 -> 13110 bytes
+ .../src/main/res/mipmap-xxxhdpi/launcher_icon.png  | Bin 24693 -> 42385 bytes
+ android/app/src/main/res/values-night/styles.xml   |   4 +
+ android/app/src/main/res/values/styles.xml         |   4 +
+ android/build.gradle                               |   8 +
+ assets/logo.png                                    | Bin 521537 -> 40322 bytes
+ .../AppIcon.appiconset/AppIcon-20@2x.png           | Bin 1804 -> 2169 bytes
+ .../AppIcon.appiconset/AppIcon-20@2x~ipad.png      | Bin 1804 -> 2169 bytes
+ .../AppIcon.appiconset/AppIcon-20@3x.png           | Bin 3655 -> 4515 bytes
+ .../AppIcon.appiconset/AppIcon-20~ipad.png         | Bin 665 -> 698 bytes
+ .../AppIcon.appiconset/AppIcon-29.png              | Bin 1152 -> 1314 bytes
+ .../AppIcon.appiconset/AppIcon-29@2x.png           | Bin 3366 -> 4368 bytes
+ .../AppIcon.appiconset/AppIcon-29@2x~ipad.png      | Bin 3366 -> 4368 bytes
+ .../AppIcon.appiconset/AppIcon-29@3x.png           | Bin 6661 -> 8543 bytes
+ .../AppIcon.appiconset/AppIcon-29~ipad.png         | Bin 1152 -> 1314 bytes
+ .../AppIcon.appiconset/AppIcon-40@2x.png           | Bin 5774 -> 7358 bytes
+ .../AppIcon.appiconset/AppIcon-40@2x~ipad.png      | Bin 5774 -> 7358 bytes
+ .../AppIcon.appiconset/AppIcon-40@3x.png           | Bin 11632 -> 15435 bytes
+ .../AppIcon.appiconset/AppIcon-40~ipad.png         | Bin 1804 -> 2169 bytes
+ .../AppIcon.appiconset/AppIcon-60@2x~car.png       | Bin 11632 -> 15435 bytes
+ .../AppIcon.appiconset/AppIcon-60@3x~car.png       | Bin 23317 -> 30250 bytes
+ .../AppIcon.appiconset/AppIcon-83.5@2x~ipad.png    | Bin 20530 -> 26916 bytes
+ .../AppIcon.appiconset/AppIcon@2x.png              | Bin 11632 -> 15435 bytes
+ .../AppIcon.appiconset/AppIcon@2x~ipad.png         | Bin 17678 -> 23202 bytes
+ .../AppIcon.appiconset/AppIcon@3x.png              | Bin 23317 -> 30250 bytes
+ .../AppIcon.appiconset/AppIcon~ios-marketing.png   | Bin 528949 -> 554204 bytes
+ .../AppIcon.appiconset/AppIcon~ipad.png            | Bin 5359 -> 6805 bytes
+ .../AppIcon.appiconset/Icon-App-1024x1024@1x.png   | Bin 422844 -> 508911 bytes
+ .../AppIcon.appiconset/Icon-App-20x20@1x.png       | Bin 696 -> 1140 bytes
+ .../AppIcon.appiconset/Icon-App-20x20@2x.png       | Bin 1885 -> 3102 bytes
+ .../AppIcon.appiconset/Icon-App-20x20@3x.png       | Bin 3465 -> 5992 bytes
+ .../AppIcon.appiconset/Icon-App-29x29@1x.png       | Bin 1112 -> 1889 bytes
+ .../AppIcon.appiconset/Icon-App-29x29@2x.png       | Bin 3392 -> 5650 bytes
+ .../AppIcon.appiconset/Icon-App-29x29@3x.png       | Bin 6509 -> 11188 bytes
+ .../AppIcon.appiconset/Icon-App-40x40@1x.png       | Bin 1885 -> 3102 bytes
+ .../AppIcon.appiconset/Icon-App-40x40@2x.png       | Bin 5689 -> 9664 bytes
+ .../AppIcon.appiconset/Icon-App-40x40@3x.png       | Bin 11141 -> 19364 bytes
+ .../AppIcon.appiconset/Icon-App-50x50@1x.png       | Bin 2626 -> 4439 bytes
+ .../AppIcon.appiconset/Icon-App-50x50@2x.png       | Bin 8486 -> 14224 bytes
+ .../AppIcon.appiconset/Icon-App-57x57@1x.png       | Bin 3243 -> 5476 bytes
+ .../AppIcon.appiconset/Icon-App-57x57@2x.png       | Bin 10251 -> 17735 bytes
+ .../AppIcon.appiconset/Icon-App-60x60@2x.png       | Bin 11141 -> 19364 bytes
+ .../AppIcon.appiconset/Icon-App-60x60@3x.png       | Bin 22081 -> 38119 bytes
+ .../AppIcon.appiconset/Icon-App-72x72@1x.png       | Bin 4831 -> 8208 bytes
+ .../AppIcon.appiconset/Icon-App-72x72@2x.png       | Bin 15154 -> 26627 bytes
+ .../AppIcon.appiconset/Icon-App-76x76@1x.png       | Bin 5226 -> 8917 bytes
+ .../AppIcon.appiconset/Icon-App-76x76@2x.png       | Bin 16606 -> 28719 bytes
+ .../AppIcon.appiconset/Icon-App-83.5x83.5@2x.png   | Bin 19369 -> 33610 bytes
+ .../LaunchImage.imageset/Contents.json             |  10 +-
+ .../LaunchImage.imageset/LaunchImage.png           | Bin 68 -> 30932 bytes
+ .../LaunchImage.imageset/LaunchImage@2x.png        | Bin 68 -> 92848 bytes
+ .../LaunchImage.imageset/LaunchImage@3x.png        | Bin 68 -> 158957 bytes
+ ios/Runner/Base.lproj/LaunchScreen.storyboard      |  17 +-
+ ios/Runner/Info.plist                              |  92 +++++-----
+ lib/l10n/app_en.arb                                |   4 +-
+ lib/l10n/app_localizations.dart                    |  12 ++
+ lib/l10n/app_localizations_en.dart                 |   7 +
+ lib/l10n/app_localizations_nl.dart                 |   7 +
+ lib/l10n/app_nl.arb                                |   4 +-
+ lib/main.dart                                      |  15 +-
+ lib/screens/device_control_screen.dart             | 113 ++++++++++--
+ lib/screens/device_list_screen.dart                |  67 ++++++-
+ lib/screens/settings_screen.dart                   |   8 +
+ lib/services/theme_service.dart                    |  12 ++
+ lib/services/wled_api_service.dart                 | 192 ++++++++++++++++++---
+ lib/widgets/expressive_switch.dart                 |   9 +
+ macos/Flutter/GeneratedPluginRegistrant.swift      |   2 +
+ pubspec.lock                                       | 158 +++++++++++++----
+ pubspec.yaml                                       |  19 +-
+ web/favicon.ico                                    | Bin 5238 -> 5238 bytes
+ web/favicon.png                                    | Bin 528 -> 888 bytes
+ web/icons/Icon-192.png                             | Bin 29360 -> 37645 bytes
+ web/icons/Icon-512.png                             | Bin 157194 -> 195370 bytes
+ web/icons/Icon-maskable-192.png                    | Bin 26123 -> 34015 bytes
+ web/icons/Icon-maskable-512.png                    | Bin 148015 -> 187042 bytes
+ web/index.html                                     | 102 ++++++++++-
+ windows/runner/resources/app_icon.ico              | Bin 41154 -> 68339 bytes
+ 99 files changed, 735 insertions(+), 182 deletions(-)

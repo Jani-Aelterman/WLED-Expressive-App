@@ -72,6 +72,14 @@ class SettingsScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     SwitchListTile(
+                      title: Text(l10n.hapticsToggle),
+                      subtitle: Text(l10n.hapticsSubtitle),
+                      value: themeService.enableHaptics,
+                      onChanged: (value) =>
+                          themeService.setEnableHaptics(value),
+                    ),
+                    const Divider(indent: 16, endIndent: 16),
+                    SwitchListTile(
                       title: Text(l10n.dynamicColorToggle),
                       subtitle: Text(l10n.dynamicColorSubtitle),
                       value: themeService.useDynamicColor,

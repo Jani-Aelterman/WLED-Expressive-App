@@ -5,14 +5,17 @@ class ThemeService extends ChangeNotifier {
   static const String _themeModeKey = 'theme_mode';
   static const String _useDynamicColorKey = 'use_dynamic_color';
   static const String _seedColorKey = 'seed_color';
+  static const String _enableHapticsKey = 'enable_haptics';
 
   ThemeMode _themeMode = ThemeMode.system;
   bool _useDynamicColor = true;
   Color _seedColor = Colors.deepPurple;
+  bool _enableHaptics = true;
 
   ThemeMode get themeMode => _themeMode;
   bool get useDynamicColor => _useDynamicColor;
   Color get seedColor => _seedColor;
+  bool get enableHaptics => _enableHaptics;
 
   ThemeService() {
     _loadSettings();
@@ -32,6 +35,8 @@ class ThemeService extends ChangeNotifier {
     if (colorValue != null) {
       _seedColor = Color(colorValue);
     }
+
+    _enableHaptics = prefs.getBool(_enableHapticsKey) ?? true;
 
     notifyListeners();
   }
@@ -55,5 +60,12 @@ class ThemeService extends ChangeNotifier {
     notifyListeners();
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_seedColorKey, color.value);
+  }
+
+  Future<void> setEnableHaptics(bool enable) async {
+    _enableHaptics = enable;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_enableHapticsKey, enable);
   }
 }

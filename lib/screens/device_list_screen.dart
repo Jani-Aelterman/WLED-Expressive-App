@@ -1,13 +1,15 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter/services.dart';
+import '../services/theme_service.dart';
 import 'package:multicast_dns/multicast_dns.dart';
 import '../models/wled_device.dart';
 import '../services/wled_api_service.dart';
 import 'device_control_screen.dart';
 
 import 'settings_screen.dart';
-import '../services/theme_service.dart';
 import '../services/locale_service.dart';
 import '../widgets/expressive_switch.dart';
 import 'package:wled_expressive/l10n/app_localizations.dart';
@@ -137,15 +139,19 @@ class _DeviceListScreenState extends State<DeviceListScreen> {
     final state = await WledApiService.getDeviceState(device.ip);
     final info = await WledApiService.getDeviceInfo(device.ip);
 
+    if (!mounted) return;
+
     if (state != null && info != null) {
       setState(() {
         device.isOnline = true;
         device.isOn = state['on'] ?? false;
         device.brightness = state['bri'] ?? 128;
+        _updateGlobalBrightness();
       });
     } else {
       setState(() {
         device.isOnline = false;
+        _updateGlobalBrightness();
       });
     }
   }
@@ -271,6 +277,7 @@ class _DeviceListScreenState extends State<DeviceListScreen> {
       for (final d in devices) {
         d.isOn = turnOn;
       }
+      _updateGlobalBrightness();
     });
 
     for (final device in devices) {
@@ -285,6 +292,26 @@ class _DeviceListScreenState extends State<DeviceListScreen> {
               : 'Alle apparaten worden uitgeschakeld'),
         ),
       );
+    }
+  }
+
+  void _updateGlobalBrightness() {
+    if (devices.isEmpty) return;
+
+    int totalBrightness = 0;
+    int count = 0;
+
+    for (var device in devices) {
+      if (device.isOnline) {
+        // If the device is off, contribute 0 to the average brightness
+        totalBrightness += device.isOn ? device.brightness : 0;
+        count++;
+      }
+    }
+
+    if (count > 0) {
+      double avg = totalBrightness / count;
+      _globalBrightness = avg.clamp(1.0, 255.0);
     }
   }
 
@@ -569,9 +596,24 @@ class _DeviceListScreenState extends State<DeviceListScreen> {
                                                     .colorScheme
                                                     .onSurfaceVariant
                                                     .withOpacity(0.2),
-                                            onChanged: _changeAllBrightness,
-                                            onChangeEnd:
-                                                _changeAllBrightnessEnd,
+                                            onChanged: (val) {
+                                              if (Provider.of<ThemeService>(
+                                                      context,
+                                                      listen: false)
+                                                  .enableHaptics) {
+                                                HapticFeedback.selectionClick();
+                                              }
+                                              _changeAllBrightness(val);
+                                            },
+                                            onChangeEnd: (val) {
+                                              if (Provider.of<ThemeService>(
+                                                      context,
+                                                      listen: false)
+                                                  .enableHaptics) {
+                                                HapticFeedback.lightImpact();
+                                              }
+                                              _changeAllBrightnessEnd(val);
+                                            },
                                           ),
                                         ),
                                         const SizedBox(width: 12),
@@ -762,6 +804,7 @@ class _DeviceListScreenState extends State<DeviceListScreen> {
                                             onChanged: (value) async {
                                               setState(() {
                                                 device.isOn = value;
+                                                _updateGlobalBrightness();
                                               });
                                               final success =
                                                   await WledApiService
@@ -770,6 +813,7 @@ class _DeviceListScreenState extends State<DeviceListScreen> {
                                               if (!success) {
                                                 setState(() {
                                                   device.isOn = !value;
+                                                  _updateGlobalBrightness();
                                                 });
                                                 if (context.mounted) {
                                                   ScaffoldMessenger.of(context)
@@ -811,12 +855,27 @@ class _DeviceListScreenState extends State<DeviceListScreen> {
                                                 label:
                                                     '${((device.brightness / 255) * 100).round()}%',
                                                 onChanged: (val) {
+                                                  if (Provider.of<ThemeService>(
+                                                          context,
+                                                          listen: false)
+                                                      .enableHaptics) {
+                                                    HapticFeedback
+                                                        .selectionClick();
+                                                  }
                                                   setState(() {
                                                     device.brightness =
                                                         val.toInt();
+                                                    _updateGlobalBrightness();
                                                   });
                                                 },
                                                 onChangeEnd: (val) {
+                                                  if (Provider.of<ThemeService>(
+                                                          context,
+                                                          listen: false)
+                                                      .enableHaptics) {
+                                                    HapticFeedback
+                                                        .lightImpact();
+                                                  }
                                                   WledApiService.setBrightness(
                                                       device.ip, val.toInt());
                                                 },

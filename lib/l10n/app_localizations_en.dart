@@ -160,4 +160,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get webInterfaceUnreachable => 'Could not open web interface';
+
+  @override
+  String get hapticsToggle => 'Haptic Feedback / Vibration';
+
+  @override
+  String get hapticsSubtitle =>
+      'Use vibrations to make controls feel more expressive';
 }

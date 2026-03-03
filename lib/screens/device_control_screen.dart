@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter/services.dart';
+import '../services/theme_service.dart';
 import 'package:wled_expressive/l10n/app_localizations.dart';
+import 'web_view_screen.dart';
+import 'segments_screen.dart';
 import '../models/wled_device.dart';
 import '../services/wled_api_service.dart';
 import '../widgets/expressive_switch.dart';
@@ -261,16 +265,12 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
   }
 
   Future<void> _openWebInterface() async {
-    final url = Uri.parse('http://${widget.device.ip}');
-    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content:
-                  Text(AppLocalizations.of(context)!.webInterfaceUnreachable)),
-        );
-      }
-    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => WebViewScreen(device: widget.device),
+      ),
+    );
   }
 
   void _showSavePresetDialog() {
@@ -328,6 +328,18 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
             color: isSyncOn ? Theme.of(context).colorScheme.primary : null,
             tooltip: 'Sync',
             onPressed: _toggleSync,
+          ),
+          IconButton(
+            icon: const Icon(Icons.view_week_outlined),
+            tooltip: 'Segments',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SegmentsScreen(device: widget.device),
+                ),
+              );
+            },
           ),
           IconButton(
             icon: Icon(isTimerOn ? Icons.timer : Icons.timer_off_outlined),
@@ -546,8 +558,20 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
                       max: 255,
                       divisions: 20,
                       label: '${((brightness / 255) * 100).round()}%',
-                      onChanged: _changeBrightness,
-                      onChangeEnd: _changeBrightnessEnd,
+                      onChanged: (val) {
+                        if (Provider.of<ThemeService>(context, listen: false)
+                            .enableHaptics) {
+                          HapticFeedback.selectionClick();
+                        }
+                        _changeBrightness(val);
+                      },
+                      onChangeEnd: (val) {
+                        if (Provider.of<ThemeService>(context, listen: false)
+                            .enableHaptics) {
+                          HapticFeedback.lightImpact();
+                        }
+                        _changeBrightnessEnd(val);
+                      },
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -659,6 +683,69 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
                           .toList(),
                     ),
                   ),
+
+                  // Quick Presets Row
+                  if (presets.isNotEmpty) ...[
+                    const SizedBox(height: 24),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Snelle Presets',
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      height: 44,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: presets.length > 15 ? 15 : presets.length,
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(width: 8),
+                        itemBuilder: (context, index) {
+                          // Sort keys to ensure consistent ordering based on preset ID
+                          final presetKeys = presets.keys.toList()
+                            ..sort(
+                                (a, b) => int.parse(a).compareTo(int.parse(b)));
+                          final presetIdStr = presetKeys[index];
+                          final presetId = int.parse(presetIdStr);
+                          final presetData = presets[presetIdStr];
+                          final presetName =
+                              presetData['n'] ?? 'Preset $presetId';
+
+                          final isSelected = currentPresetId == presetId;
+
+                          return ActionChip(
+                            label: Text(presetName),
+                            avatar: Icon(
+                              Icons.favorite,
+                              size: 16,
+                              color: isSelected
+                                  ? Theme.of(context)
+                                      .colorScheme
+                                      .onPrimaryContainer
+                                  : Theme.of(context).colorScheme.primary,
+                            ),
+                            backgroundColor: isSelected
+                                ? Theme.of(context).colorScheme.primaryContainer
+                                : Theme.of(context).colorScheme.surface,
+                            side: BorderSide(
+                              color: isSelected
+                                  ? Colors.transparent
+                                  : Theme.of(context)
+                                      .colorScheme
+                                      .outlineVariant,
+                            ),
+                            onPressed: () => _applyPreset(presetId),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+
                   const SizedBox(height: 24),
                   FilledButton.icon(
                     onPressed: _applyColor,

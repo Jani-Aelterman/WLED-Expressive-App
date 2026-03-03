@@ -52,5 +52,7 @@
   "seedColorSubtitle": "Used as the primary color for the app",
   "languageSection": "Language",
   "languageLabel": "App Language",
-  "webInterfaceUnreachable": "Could not open web interface"
+  "webInterfaceUnreachable": "Could not open web interface",
+  "hapticsToggle": "Haptic Feedback / Vibration",
+  "hapticsSubtitle": "Use vibrations to make controls feel more expressive"
 }

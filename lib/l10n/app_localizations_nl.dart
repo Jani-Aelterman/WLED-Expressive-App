@@ -160,4 +160,11 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get webInterfaceUnreachable => 'Kon webinterface niet openen';
+
+  @override
+  String get hapticsToggle => 'Haptische Feedback / Trillen';
+
+  @override
+  String get hapticsSubtitle =>
+      'Gebruik trillingen om besturing expressiever te laten voelen';
 }

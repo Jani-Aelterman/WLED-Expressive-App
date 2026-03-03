@@ -49,5 +49,7 @@
   "seedColorSubtitle": "Gebruikt als de primaire kleur voor de app",
   "languageSection": "Taal",
   "languageLabel": "App Taal",
-  "webInterfaceUnreachable": "Kon webinterface niet openen"
+  "webInterfaceUnreachable": "Kon webinterface niet openen",
+  "hapticsToggle": "Haptische Feedback / Trillen",
+  "hapticsSubtitle": "Gebruik trillingen om besturing expressiever te laten voelen"
 }

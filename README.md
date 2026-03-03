@@ -16,12 +16,25 @@ A beautiful, modern, Material 3-focused remote control app for WLED devices. Des
 
 *Add your screenshots here!*
 
-## Getting Started 🚀
+## Installation 🚀
 
-1. Ensure you have Flutter installed.
+You can download pre-compiled releases for your platform from the [GitHub Releases](../../releases) section.
+
+### Android
+Download the `app-release.apk` file to your phone and install it. Make sure you have enabled installing apps from unknown sources in your settings.
+
+### Windows
+Download the `wled_expressive_windows.zip` file, extract it to a folder of your choice, and run `wled_expressive.exe`. No installation is required.
+
+### Linux
+Download the `wled_expressive_linux.tar.gz` bundle, extract the archive, and execute the `wled_expressive` binary.
+
+### Building from Source
+If you want to build the app yourself or test it on macOS/iOS:
+1. Ensure you have [Flutter](https://flutter.dev/docs/get-started/install) installed.
 2. Clone this repository.
 3. Run `flutter pub get`.
-4. Run `flutter run` (or build for Windows/Android/Web).
+4. Run `flutter run` or build it for your specific platform using `flutter build`.
 
 ## Built With ❤️ & 🛠️
 

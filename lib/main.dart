@@ -6,6 +6,7 @@ import 'package:wled_expressive/l10n/app_localizations.dart';
 import 'screens/device_list_screen.dart';
 import 'widgets/expressive_slider.dart';
 
+import 'package:provider/provider.dart';
 import 'services/theme_service.dart';
 import 'services/locale_service.dart';
 
@@ -14,7 +15,15 @@ void main() async {
   final prefs = await SharedPreferences.getInstance();
   final themeService = ThemeService();
   final localeService = LocaleService(prefs);
-  runApp(WledApp(themeService: themeService, localeService: localeService));
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: themeService),
+      ],
+      child: WledApp(themeService: themeService, localeService: localeService),
+    ),
+  );
 }
 
 class WledApp extends StatelessWidget {
@@ -89,7 +98,7 @@ class WledApp extends StatelessWidget {
                           lightScheme.onSurfaceVariant.withOpacity(0.2),
                       thumbColor: lightScheme.primary,
                       overlayColor: lightScheme.primary.withOpacity(0.1),
-                      showValueIndicator: ShowValueIndicator.always,
+                      showValueIndicator: ShowValueIndicator.onDrag,
                       valueIndicatorTextStyle: TextStyle(
                         color: lightScheme.onPrimary,
                         fontWeight: FontWeight.bold,
@@ -112,7 +121,7 @@ class WledApp extends StatelessWidget {
                           darkScheme.onSurfaceVariant.withOpacity(0.2),
                       thumbColor: darkScheme.primary,
                       overlayColor: darkScheme.primary.withOpacity(0.1),
-                      showValueIndicator: ShowValueIndicator.always,
+                      showValueIndicator: ShowValueIndicator.onDrag,
                       valueIndicatorTextStyle: TextStyle(
                         color: darkScheme.onPrimary,
                         fontWeight: FontWeight.bold,

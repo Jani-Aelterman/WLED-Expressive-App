@@ -403,6 +403,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not open web interface'**
   String get webInterfaceUnreachable;
+
+  /// No description provided for @hapticsToggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Haptic Feedback / Vibration'**
+  String get hapticsToggle;
+
+  /// No description provided for @hapticsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Use vibrations to make controls feel more expressive'**
+  String get hapticsSubtitle;
 }
 
 class _AppLocalizationsDelegate

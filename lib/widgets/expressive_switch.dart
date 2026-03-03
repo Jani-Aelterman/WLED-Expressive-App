@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import '../services/theme_service.dart';
 
 class ExpressiveSwitch extends StatefulWidget {
   final bool value;
@@ -22,12 +25,18 @@ class _ExpressiveSwitchState extends State<ExpressiveSwitch> {
   bool _isPressed = false;
 
   void _handleTapDown(TapDownDetails details) {
+    if (Provider.of<ThemeService>(context, listen: false).enableHaptics) {
+      HapticFeedback.lightImpact();
+    }
     setState(() {
       _isPressed = true;
     });
   }
 
   void _handleTapUp(TapUpDetails details) {
+    if (Provider.of<ThemeService>(context, listen: false).enableHaptics) {
+      HapticFeedback.lightImpact();
+    }
     setState(() {
       _isPressed = false;
     });
