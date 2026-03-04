@@ -167,4 +167,104 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hapticsSubtitle =>
       'Use vibrations to make controls feel more expressive';
+
+  @override
+  String get apSetupNewDevice => 'New WLED Device!';
+
+  @override
+  String get apSetupManualTitle => 'Manual AP Setup';
+
+  @override
+  String apSetupFoundText(String ssid) {
+    return 'We found a WLED network ($ssid) nearby that currently has no internet connection. Would you like to connect to it to set up Wi-Fi?';
+  }
+
+  @override
+  String apSetupManualText(String ssid) {
+    return 'Make sure your new WLED device is powered on. We will now try to connect to the default \'$ssid\' network to configure Wi-Fi.\n\n(Tip for iOS: Connect to the WLED-AP network manually in your iPhone Settings if this doesn\'t work automatically!)';
+  }
+
+  @override
+  String get apSetupConnectAndSetup => 'Connect and Setup';
+
+  @override
+  String get apSetupIgnoreDevice => 'Ignore Device';
+
+  @override
+  String get apSetupFailedConnect =>
+      'Could not connect to AP. Make sure you are nearby.';
+
+  @override
+  String get apSetupOptionTitle => 'New WLED device (AP Setup)';
+
+  @override
+  String get apSetupOptionSubtitle =>
+      'Automatically connect to a new device and set up Wi-Fi.';
+
+  @override
+  String get manualAddOptionTitle => 'Add manually via IP';
+
+  @override
+  String get manualAddOptionSubtitle =>
+      'If the device is already on your network.';
+
+  @override
+  String get wifiSetupTitle => 'Wi-Fi Setup';
+
+  @override
+  String get wifiSetupHeader => 'Choose Home Network';
+
+  @override
+  String get wifiSetupDescription =>
+      'Enter the name and password of your Wi-Fi network so the WLED can connect to it.';
+
+  @override
+  String get wifiSetupNetworkLabel => 'Network (SSID)';
+
+  @override
+  String get wifiSetupEmptyError => 'Please enter a network name';
+
+  @override
+  String get wifiSetupPasswordLabel => 'Password';
+
+  @override
+  String get wifiSetupSaveConnect => 'Save & Connect';
+
+  @override
+  String get wifiSetupSuccess => 'Wi-Fi settings saved! Connecting...';
+
+  @override
+  String wifiSetupError(String error) {
+    return 'Error saving: $error';
+  }
+
+  @override
+  String get color => 'Color';
+
+  @override
+  String get quickPresets => 'Quick Presets';
+
+  @override
+  String get applyColor => 'Apply Color';
+
+  @override
+  String get errorLoadEffects => 'Could not load effects';
+
+  @override
+  String get searchEffects => 'Search effects...';
+
+  @override
+  String get errorLoadPalettes => 'Could not load palettes';
+
+  @override
+  String get searchPalettes => 'Search palettes...';
+
+  @override
+  String get noPresetsFound => 'No presets found';
+
+  @override
+  String get createPresetsHint => 'Create presets in the web interface';
+
+  @override
+  String get saveStateAsPreset => 'Save current state as preset';
 }

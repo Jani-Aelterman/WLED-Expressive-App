@@ -415,6 +415,186 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Use vibrations to make controls feel more expressive'**
   String get hapticsSubtitle;
+
+  /// No description provided for @apSetupNewDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'New WLED Device!'**
+  String get apSetupNewDevice;
+
+  /// No description provided for @apSetupManualTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual AP Setup'**
+  String get apSetupManualTitle;
+
+  /// No description provided for @apSetupFoundText.
+  ///
+  /// In en, this message translates to:
+  /// **'We found a WLED network ({ssid}) nearby that currently has no internet connection. Would you like to connect to it to set up Wi-Fi?'**
+  String apSetupFoundText(String ssid);
+
+  /// No description provided for @apSetupManualText.
+  ///
+  /// In en, this message translates to:
+  /// **'Make sure your new WLED device is powered on. We will now try to connect to the default \'{ssid}\' network to configure Wi-Fi.\n\n(Tip for iOS: Connect to the WLED-AP network manually in your iPhone Settings if this doesn\'t work automatically!)'**
+  String apSetupManualText(String ssid);
+
+  /// No description provided for @apSetupConnectAndSetup.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect and Setup'**
+  String get apSetupConnectAndSetup;
+
+  /// No description provided for @apSetupIgnoreDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Ignore Device'**
+  String get apSetupIgnoreDevice;
+
+  /// No description provided for @apSetupFailedConnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not connect to AP. Make sure you are nearby.'**
+  String get apSetupFailedConnect;
+
+  /// No description provided for @apSetupOptionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New WLED device (AP Setup)'**
+  String get apSetupOptionTitle;
+
+  /// No description provided for @apSetupOptionSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatically connect to a new device and set up Wi-Fi.'**
+  String get apSetupOptionSubtitle;
+
+  /// No description provided for @manualAddOptionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add manually via IP'**
+  String get manualAddOptionTitle;
+
+  /// No description provided for @manualAddOptionSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'If the device is already on your network.'**
+  String get manualAddOptionSubtitle;
+
+  /// No description provided for @wifiSetupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Wi-Fi Setup'**
+  String get wifiSetupTitle;
+
+  /// No description provided for @wifiSetupHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Home Network'**
+  String get wifiSetupHeader;
+
+  /// No description provided for @wifiSetupDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the name and password of your Wi-Fi network so the WLED can connect to it.'**
+  String get wifiSetupDescription;
+
+  /// No description provided for @wifiSetupNetworkLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Network (SSID)'**
+  String get wifiSetupNetworkLabel;
+
+  /// No description provided for @wifiSetupEmptyError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a network name'**
+  String get wifiSetupEmptyError;
+
+  /// No description provided for @wifiSetupPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get wifiSetupPasswordLabel;
+
+  /// No description provided for @wifiSetupSaveConnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Save & Connect'**
+  String get wifiSetupSaveConnect;
+
+  /// No description provided for @wifiSetupSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Wi-Fi settings saved! Connecting...'**
+  String get wifiSetupSuccess;
+
+  /// No description provided for @wifiSetupError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error saving: {error}'**
+  String wifiSetupError(String error);
+
+  /// No description provided for @color.
+  ///
+  /// In en, this message translates to:
+  /// **'Color'**
+  String get color;
+
+  /// No description provided for @quickPresets.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Presets'**
+  String get quickPresets;
+
+  /// No description provided for @applyColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply Color'**
+  String get applyColor;
+
+  /// No description provided for @errorLoadEffects.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load effects'**
+  String get errorLoadEffects;
+
+  /// No description provided for @searchEffects.
+  ///
+  /// In en, this message translates to:
+  /// **'Search effects...'**
+  String get searchEffects;
+
+  /// No description provided for @errorLoadPalettes.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load palettes'**
+  String get errorLoadPalettes;
+
+  /// No description provided for @searchPalettes.
+  ///
+  /// In en, this message translates to:
+  /// **'Search palettes...'**
+  String get searchPalettes;
+
+  /// No description provided for @noPresetsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No presets found'**
+  String get noPresetsFound;
+
+  /// No description provided for @createPresetsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Create presets in the web interface'**
+  String get createPresetsHint;
+
+  /// No description provided for @saveStateAsPreset.
+  ///
+  /// In en, this message translates to:
+  /// **'Save current state as preset'**
+  String get saveStateAsPreset;
 }
 
 class _AppLocalizationsDelegate

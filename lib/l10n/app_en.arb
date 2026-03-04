@@ -54,5 +54,50 @@
   "languageLabel": "App Language",
   "webInterfaceUnreachable": "Could not open web interface",
   "hapticsToggle": "Haptic Feedback / Vibration",
-  "hapticsSubtitle": "Use vibrations to make controls feel more expressive"
+  "hapticsSubtitle": "Use vibrations to make controls feel more expressive",
+  "apSetupNewDevice": "New WLED Device!",
+  "apSetupManualTitle": "Manual AP Setup",
+  "apSetupFoundText": "We found a WLED network ({ssid}) nearby that currently has no internet connection. Would you like to connect to it to set up Wi-Fi?",
+  "@apSetupFoundText": {
+    "placeholders": {
+      "ssid": {"type": "String", "example": "WLED-AP"}
+    }
+  },
+  "apSetupManualText": "Make sure your new WLED device is powered on. We will now try to connect to the default '{ssid}' network to configure Wi-Fi.\n\n(Tip for iOS: Connect to the WLED-AP network manually in your iPhone Settings if this doesn't work automatically!)",
+  "@apSetupManualText": {
+    "placeholders": {
+      "ssid": {"type": "String", "example": "WLED-AP"}
+    }
+  },
+  "apSetupConnectAndSetup": "Connect and Setup",
+  "apSetupIgnoreDevice": "Ignore Device",
+  "apSetupFailedConnect": "Could not connect to AP. Make sure you are nearby.",
+  "apSetupOptionTitle": "New WLED device (AP Setup)",
+  "apSetupOptionSubtitle": "Automatically connect to a new device and set up Wi-Fi.",
+  "manualAddOptionTitle": "Add manually via IP",
+  "manualAddOptionSubtitle": "If the device is already on your network.",
+  "wifiSetupTitle": "Wi-Fi Setup",
+  "wifiSetupHeader": "Choose Home Network",
+  "wifiSetupDescription": "Enter the name and password of your Wi-Fi network so the WLED can connect to it.",
+  "wifiSetupNetworkLabel": "Network (SSID)",
+  "wifiSetupEmptyError": "Please enter a network name",
+  "wifiSetupPasswordLabel": "Password",
+  "wifiSetupSaveConnect": "Save & Connect",
+  "wifiSetupSuccess": "Wi-Fi settings saved! Connecting...",
+  "wifiSetupError": "Error saving: {error}",
+  "@wifiSetupError": {
+    "placeholders": {
+      "error": {"type": "String", "example": "Server failure"}
+    }
+  },
+  "color": "Color",
+  "quickPresets": "Quick Presets",
+  "applyColor": "Apply Color",
+  "errorLoadEffects": "Could not load effects",
+  "searchEffects": "Search effects...",
+  "errorLoadPalettes": "Could not load palettes",
+  "searchPalettes": "Search palettes...",
+  "noPresetsFound": "No presets found",
+  "createPresetsHint": "Create presets in the web interface",
+  "saveStateAsPreset": "Save current state as preset"
 }

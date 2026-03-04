@@ -3,9 +3,11 @@ import 'package:webview_flutter/webview_flutter.dart';
 import '../models/wled_device.dart';
 
 class WebViewScreen extends StatefulWidget {
-  final WledDevice device;
+  final WledDevice? device;
+  final String? url;
+  final String? title;
 
-  const WebViewScreen({super.key, required this.device});
+  const WebViewScreen({super.key, this.device, this.url, this.title});
 
   @override
   State<WebViewScreen> createState() => _WebViewScreenState();
@@ -32,14 +34,14 @@ class _WebViewScreenState extends State<WebViewScreen> {
           },
         ),
       )
-      ..loadRequest(Uri.parse('http://${widget.device.ip}'));
+      ..loadRequest(Uri.parse(widget.url ?? 'http://${widget.device!.ip}'));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.device.name),
+        title: Text(widget.title ?? widget.device?.name ?? 'WLED'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),

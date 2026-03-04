@@ -8,9 +8,11 @@ import 'package:multicast_dns/multicast_dns.dart';
 import '../models/wled_device.dart';
 import '../services/wled_api_service.dart';
 import 'device_control_screen.dart';
+import 'wifi_setup_screen.dart';
 
 import 'settings_screen.dart';
 import '../services/locale_service.dart';
+import '../services/wifi_setup_service.dart';
 import '../widgets/expressive_switch.dart';
 import 'package:wled_expressive/l10n/app_localizations.dart';
 
@@ -35,6 +37,140 @@ class _DeviceListScreenState extends State<DeviceListScreen> {
   void initState() {
     super.initState();
     _loadDevices();
+    _checkForWledAp();
+  }
+
+  Future<void> _checkForWledAp() async {
+    // Wait a brief moment to not block initial render
+    await Future.delayed(const Duration(seconds: 2));
+    final String? apSsid = await WifiSetupService.scanForWledAp();
+    if (apSsid != null && mounted) {
+      _showApSetupBottomSheet(apSsid);
+    }
+  }
+
+  void _showApSetupBottomSheet(String ssid, {bool isManual = false}) {
+    bool isConnecting = false;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext ctx) {
+        return StatefulBuilder(builder: (context, setModalState) {
+          return Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(28)),
+            ),
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+              top: 32,
+              left: 24,
+              right: 24,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Hero(
+                  tag: 'esp32_illustration',
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(24),
+                    child: Image.asset(
+                      'assets/esp32.png',
+                      height: 160,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  isManual
+                      ? AppLocalizations.of(context)!.apSetupManualTitle
+                      : AppLocalizations.of(context)!.apSetupNewDevice,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  isManual
+                      ? AppLocalizations.of(context)!.apSetupManualText(ssid)
+                      : AppLocalizations.of(context)!.apSetupFoundText(ssid),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 32),
+                if (isConnecting)
+                  const CircularProgressIndicator()
+                else
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      FilledButton(
+                        onPressed: () async {
+                          setModalState(() => isConnecting = true);
+                          final success =
+                              await WifiSetupService.connectToAp(ssid);
+                          if (success && mounted) {
+                            Navigator.pop(ctx);
+                            // Open native Wi-Fi setup screen
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const WifiSetupScreen(
+                                  deviceIp: '4.3.2.1',
+                                ),
+                              ),
+                            ).then((_) {
+                              // Re-discover devices when returning, ideally they connected to home wifi now.
+                              _refreshAllDevices();
+                            });
+                          } else {
+                            setModalState(() => isConnecting = false);
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content: Text(AppLocalizations.of(context)!
+                                        .apSetupFailedConnect)),
+                              );
+                            }
+                          }
+                        },
+                        style: FilledButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        child: Text(AppLocalizations.of(context)!
+                            .apSetupConnectAndSetup),
+                      ),
+                      const SizedBox(height: 12),
+                      TextButton(
+                        onPressed: () {
+                          if (!isManual) {
+                            WifiSetupService.ignoreAp(ssid);
+                          }
+                          Navigator.pop(ctx);
+                        },
+                        child: Text(isManual
+                            ? AppLocalizations.of(context)!.cancel
+                            : AppLocalizations.of(context)!
+                                .apSetupIgnoreDevice),
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+          );
+        });
+      },
+    );
   }
 
   Future<void> _discoverDevices() async {
@@ -154,6 +290,56 @@ class _DeviceListScreenState extends State<DeviceListScreen> {
         _updateGlobalBrightness();
       });
     }
+  }
+
+  void _showAddDeviceOptionsBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext ctx) {
+        return Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                AppLocalizations.of(context)!.addDeviceButton,
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge
+                    ?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              ListTile(
+                leading: const Icon(Icons.wifi_find),
+                title: Text(AppLocalizations.of(context)!.apSetupOptionTitle),
+                subtitle:
+                    Text(AppLocalizations.of(context)!.apSetupOptionSubtitle),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _showApSetupBottomSheet("WLED-AP", isManual: true);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.add_link),
+                title: Text(AppLocalizations.of(context)!.manualAddOptionTitle),
+                subtitle:
+                    Text(AppLocalizations.of(context)!.manualAddOptionSubtitle),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _showAddDeviceDialog();
+                },
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   void _showAddDeviceDialog() {
@@ -970,7 +1156,7 @@ class _DeviceListScreenState extends State<DeviceListScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: _showAddDeviceDialog,
+        onPressed: _showAddDeviceOptionsBottomSheet,
         icon: const Icon(Icons.add),
         label: Text(AppLocalizations.of(context)!.addDeviceButton),
       ),

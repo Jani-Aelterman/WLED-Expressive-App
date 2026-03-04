@@ -13,8 +13,19 @@ A beautiful, modern, Material 3-focused remote control app for WLED devices. Des
 - **Deep WLED Integration**: Full control over colors, effects, palettes, and presets for individual lamps.
 
 ## Screenshots 📸
-
-*Add your screenshots here!*
+<p float="left">
+  <img src="assets/screenshots/Screenshot_Startpage.png" width="30%" />
+  <img src="assets/screenshots/Screenshot_DevicePage.png" width="30%" />
+  <img src="assets/screenshots/Screenshot_ManualAPSetup.png" width="30%" />
+</p>
+<p float="left">
+  <img src="assets/screenshots/Screenshot_Palettes.png" width="30%" />
+  <img src="assets/screenshots/Screenshot_Effects.png" width="30%" />
+  <img src="assets/screenshots/Screenshot_Presets.png" width="30%" />
+</p>
+<p float="left">
+  <img src="assets/screenshots/Screenshot_SettingsPage.png" width="30%" />
+</p>
 
 ## Installation 🚀
 

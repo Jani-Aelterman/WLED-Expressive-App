@@ -323,14 +323,19 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
       appBar: AppBar(
         title: Text(widget.device.name),
         actions: [
-          IconButton(
-            icon: Icon(isSyncOn ? Icons.sync : Icons.sync_disabled),
-            color: isSyncOn ? Theme.of(context).colorScheme.primary : null,
-            tooltip: 'Sync',
-            onPressed: _toggleSync,
-          ),
-          IconButton(
-            icon: const Icon(Icons.view_week_outlined),
+          isSyncOn
+              ? IconButton.filledTonal(
+                  icon: const Icon(Icons.sync),
+                  tooltip: 'Sync',
+                  onPressed: _toggleSync,
+                )
+              : IconButton.outlined(
+                  icon: const Icon(Icons.sync_disabled),
+                  tooltip: 'Sync',
+                  onPressed: _toggleSync,
+                ),
+          IconButton.filledTonal(
+            icon: const Icon(Icons.view_week),
             tooltip: 'Segments',
             onPressed: () {
               Navigator.push(
@@ -341,25 +346,34 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
               );
             },
           ),
-          IconButton(
-            icon: Icon(isTimerOn ? Icons.timer : Icons.timer_off_outlined),
-            color: isTimerOn ? Theme.of(context).colorScheme.primary : null,
-            tooltip: 'Timer',
-            onPressed: _toggleTimer,
-          ),
-          IconButton(
-            icon: const Icon(Icons.settings_outlined),
+          isTimerOn
+              ? IconButton.filledTonal(
+                  icon: const Icon(Icons.timer),
+                  tooltip: 'Timer',
+                  onPressed: _toggleTimer,
+                )
+              : IconButton.outlined(
+                  icon: const Icon(Icons.timer_off_outlined),
+                  tooltip: 'Timer',
+                  onPressed: _toggleTimer,
+                ),
+          IconButton.filledTonal(
+            icon: const Icon(Icons.settings),
             tooltip: 'Instellingen (Web)',
             onPressed: _openWebInterface,
           ),
-          IconButton(
-            icon: Icon(isOn
-                ? Icons.power_settings_new
-                : Icons.power_settings_new_outlined),
-            color: isOn ? Theme.of(context).colorScheme.primary : null,
-            tooltip: 'Aan/Uit',
-            onPressed: _togglePower,
-          ),
+          isOn
+              ? IconButton.filledTonal(
+                  icon: const Icon(Icons.power_settings_new),
+                  tooltip: 'Aan/Uit',
+                  onPressed: _togglePower,
+                )
+              : IconButton.outlined(
+                  icon: const Icon(Icons.power_settings_new_outlined),
+                  tooltip: 'Aan/Uit',
+                  onPressed: _togglePower,
+                ),
+          const SizedBox(width: 8),
         ],
       ),
       body: _buildBody(),
@@ -514,7 +528,9 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
                                         .onSurfaceVariant,
                                 fontWeight: FontWeight.bold,
                               ),
-                          child: Text(isOn ? 'Aan' : 'Uit'),
+                          child: Text(isOn
+                              ? AppLocalizations.of(context)!.on
+                              : AppLocalizations.of(context)!.off),
                         ),
                       ],
                     ),
@@ -533,7 +549,7 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
 
           // Brightness Section
           Text(
-            'Helderheid',
+            AppLocalizations.of(context)!.brightness,
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 8),
@@ -600,7 +616,7 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Kleur',
+                AppLocalizations.of(context)!.color,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               SegmentedButton<int>(
@@ -690,7 +706,7 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        'Snelle Presets',
+                        AppLocalizations.of(context)!.quickPresets,
                         style:
                             Theme.of(context).textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
@@ -750,7 +766,7 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
                   FilledButton.icon(
                     onPressed: _applyColor,
                     icon: const Icon(Icons.color_lens),
-                    label: const Text('Kleur Toepassen'),
+                    label: Text(AppLocalizations.of(context)!.applyColor),
                     style: FilledButton.styleFrom(
                       minimumSize: const Size.fromHeight(64),
                       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -786,7 +802,7 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
                 size: 64, color: Theme.of(context).colorScheme.error),
             const SizedBox(height: 16),
             Text(
-              'Kon effecten niet laden',
+              AppLocalizations.of(context)!.errorLoadEffects,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     color: Theme.of(context).colorScheme.error,
                   ),
@@ -810,7 +826,7 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
           padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
           child: SearchBar(
             controller: _effectSearchController,
-            hintText: 'Zoek effecten...',
+            hintText: AppLocalizations.of(context)!.searchEffects,
             leading: const Icon(Icons.search),
             elevation: WidgetStateProperty.all(0),
             backgroundColor: WidgetStateProperty.all(
@@ -928,7 +944,7 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
                 size: 64, color: Theme.of(context).colorScheme.error),
             const SizedBox(height: 16),
             Text(
-              'Kon paletten niet laden',
+              AppLocalizations.of(context)!.errorLoadPalettes,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     color: Theme.of(context).colorScheme.error,
                   ),
@@ -952,7 +968,7 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
           padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
           child: SearchBar(
             controller: _paletteSearchController,
-            hintText: 'Zoek paletten...',
+            hintText: AppLocalizations.of(context)!.searchPalettes,
             leading: const Icon(Icons.search),
             elevation: WidgetStateProperty.all(0),
             backgroundColor: WidgetStateProperty.all(
@@ -1030,14 +1046,14 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
                 size: 64, color: Theme.of(context).colorScheme.outline),
             const SizedBox(height: 16),
             Text(
-              'Geen presets gevonden',
+              AppLocalizations.of(context)!.noPresetsFound,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     color: Theme.of(context).colorScheme.outline,
                   ),
             ),
             const SizedBox(height: 8),
             Text(
-              'Maak presets aan in de webinterface',
+              AppLocalizations.of(context)!.createPresetsHint,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Theme.of(context).colorScheme.outline,
                   ),
@@ -1061,7 +1077,7 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
             child: FilledButton.icon(
               onPressed: _showSavePresetDialog,
               icon: const Icon(Icons.add),
-              label: const Text('Huidige staat opslaan als preset'),
+              label: Text(AppLocalizations.of(context)!.saveStateAsPreset),
               style: FilledButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(

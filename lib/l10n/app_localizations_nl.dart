@@ -167,4 +167,104 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get hapticsSubtitle =>
       'Gebruik trillingen om besturing expressiever te laten voelen';
+
+  @override
+  String get apSetupNewDevice => 'Nieuw WLED Apparaat!';
+
+  @override
+  String get apSetupManualTitle => 'WLED-AP Verbinden';
+
+  @override
+  String apSetupFoundText(String ssid) {
+    return 'We hebben een WLED netwerk ($ssid) in de buurt gevonden dat nog geen internet verbinding heeft. Wil je hiermee verbinden om het in te stellen?';
+  }
+
+  @override
+  String apSetupManualText(String ssid) {
+    return 'Zorg dat je nieuwe WLED apparaat aan staat. We proberen nu te verbinden met het standaard \'$ssid\' netwerk om Wi-Fi in te stellen.\n\n(Tip voor iOS: Verbind zelf in je iPhone Instellingen met het WLED-AP netwerk als dit niet automatisch werkt!)';
+  }
+
+  @override
+  String get apSetupConnectAndSetup => 'Verbinden en Instellen';
+
+  @override
+  String get apSetupIgnoreDevice => 'Apparaat Negeren';
+
+  @override
+  String get apSetupFailedConnect =>
+      'Kan niet met AP verbinden. Controleer of je in de buurt bent.';
+
+  @override
+  String get apSetupOptionTitle => 'Nieuw WLED apparaat (AP Setup)';
+
+  @override
+  String get apSetupOptionSubtitle =>
+      'Verbind automatisch met een nieuw apparaat en stel Wi-Fi in.';
+
+  @override
+  String get manualAddOptionTitle => 'Voeg handmatig toe via IP';
+
+  @override
+  String get manualAddOptionSubtitle =>
+      'Als het apparaat al op je netwerk zit.';
+
+  @override
+  String get wifiSetupTitle => 'Wi-Fi Instellen';
+
+  @override
+  String get wifiSetupHeader => 'Thuisnetwerk Kiezen';
+
+  @override
+  String get wifiSetupDescription =>
+      'Voer de naam en het wachtwoord in van je Wi-Fi netwerk zodat de WLED hiermee kan verbinden.';
+
+  @override
+  String get wifiSetupNetworkLabel => 'Netwerk (SSID)';
+
+  @override
+  String get wifiSetupEmptyError => 'Vul een netwerknaam in';
+
+  @override
+  String get wifiSetupPasswordLabel => 'Wachtwoord';
+
+  @override
+  String get wifiSetupSaveConnect => 'Opslaan & Verbinden';
+
+  @override
+  String get wifiSetupSuccess => 'Wi-Fi instellingen opgeslagen! Verbinden...';
+
+  @override
+  String wifiSetupError(String error) {
+    return 'Fout bij opslaan: $error';
+  }
+
+  @override
+  String get color => 'Kleur';
+
+  @override
+  String get quickPresets => 'Snelle Presets';
+
+  @override
+  String get applyColor => 'Kleur Toepassen';
+
+  @override
+  String get errorLoadEffects => 'Kon effecten niet laden';
+
+  @override
+  String get searchEffects => 'Zoek effecten...';
+
+  @override
+  String get errorLoadPalettes => 'Kon paletten niet laden';
+
+  @override
+  String get searchPalettes => 'Zoek paletten...';
+
+  @override
+  String get noPresetsFound => 'Geen presets gevonden';
+
+  @override
+  String get createPresetsHint => 'Maak presets aan in de webinterface';
+
+  @override
+  String get saveStateAsPreset => 'Huidige staat opslaan als preset';
 }
