@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 import '../services/theme_service.dart';
 import 'package:wled_expressive/l10n/app_localizations.dart';
-import 'web_view_screen.dart';
+import 'device_settings_dashboard.dart';
 import 'segments_screen.dart';
 import '../models/wled_device.dart';
 import '../services/wled_api_service.dart';
@@ -25,6 +25,9 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
   List<Color> slotColors = [Colors.blue, Colors.black, Colors.black];
   int _selectedColorSlot = 0;
   int _selectedIndex = 0;
+
+  bool isLive = false;
+  String liveIp = "";
 
   bool isSyncOn = false;
   bool isTimerOn = false;
@@ -101,8 +104,17 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
 
   Future<void> _fetchCurrentState() async {
     final state = await WledApiService.getDeviceState(widget.device.ip);
+    final info = await WledApiService.getDeviceInfo(widget.device.ip);
+
     if (state != null && mounted) {
       setState(() {
+        if (info != null) {
+          isLive = info['live'] ?? false;
+          liveIp = info['lip'] ?? "";
+          widget.device.isLive = isLive;
+          widget.device.liveIp = liveIp;
+        }
+
         isOn = state['on'] ?? false;
         brightness = (state['bri'] ?? 128).toDouble();
 
@@ -220,6 +232,86 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
     _fetchCurrentState();
   }
 
+  void _overrideLiveData(int lorMode) async {
+    final success =
+        await WledApiService.setLiveOverride(widget.device.ip, lorMode);
+    if (success && mounted) {
+      // Re-fetch state to clear the warning banner
+      setState(() {
+        isLive = false; // Optimistically hide
+      });
+      _fetchCurrentState();
+    }
+  }
+
+  Widget _buildLiveOverrideWarning() {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.errorContainer,
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.sensors,
+                  color: Theme.of(context).colorScheme.onErrorContainer),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  AppLocalizations.of(context)!.liveDataActive,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onErrorContainer,
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            AppLocalizations.of(context)!.liveDataActiveDesc(liveIp),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onErrorContainer,
+                ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              TextButton(
+                onPressed: () => _overrideLiveData(1), // Override Once
+                style: TextButton.styleFrom(
+                  foregroundColor:
+                      Theme.of(context).colorScheme.onErrorContainer,
+                ),
+                child: Text(AppLocalizations.of(context)!.liveDataOverrideOnce),
+              ),
+              const SizedBox(width: 8),
+              FilledButton.tonal(
+                onPressed: () => _overrideLiveData(2), // Override until reboot
+                style: FilledButton.styleFrom(
+                  backgroundColor: Theme.of(context)
+                      .colorScheme
+                      .onErrorContainer
+                      .withValues(alpha: 0.2),
+                  foregroundColor:
+                      Theme.of(context).colorScheme.onErrorContainer,
+                ),
+                child:
+                    Text(AppLocalizations.of(context)!.liveDataOverrideReboot),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   void _toggleSync() async {
     final newState = !isSyncOn;
     setState(() {
@@ -268,7 +360,7 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => WebViewScreen(device: widget.device),
+        builder: (context) => DeviceSettingsDashboard(device: widget.device),
       ),
     );
   }
@@ -323,45 +415,6 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
       appBar: AppBar(
         title: Text(widget.device.name),
         actions: [
-          isSyncOn
-              ? IconButton.filledTonal(
-                  icon: const Icon(Icons.sync),
-                  tooltip: 'Sync',
-                  onPressed: _toggleSync,
-                )
-              : IconButton.outlined(
-                  icon: const Icon(Icons.sync_disabled),
-                  tooltip: 'Sync',
-                  onPressed: _toggleSync,
-                ),
-          IconButton.filledTonal(
-            icon: const Icon(Icons.view_week),
-            tooltip: 'Segments',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SegmentsScreen(device: widget.device),
-                ),
-              );
-            },
-          ),
-          isTimerOn
-              ? IconButton.filledTonal(
-                  icon: const Icon(Icons.timer),
-                  tooltip: 'Timer',
-                  onPressed: _toggleTimer,
-                )
-              : IconButton.outlined(
-                  icon: const Icon(Icons.timer_off_outlined),
-                  tooltip: 'Timer',
-                  onPressed: _toggleTimer,
-                ),
-          IconButton.filledTonal(
-            icon: const Icon(Icons.settings),
-            tooltip: 'Instellingen (Web)',
-            onPressed: _openWebInterface,
-          ),
           isOn
               ? IconButton.filledTonal(
                   icon: const Icon(Icons.power_settings_new),
@@ -445,18 +498,112 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
   }
 
   Widget _buildBody() {
-    switch (_selectedIndex) {
-      case 0:
-        return _buildColorTab();
-      case 1:
-        return _buildPalettesTab();
-      case 2:
-        return _buildEffectsTab();
-      case 3:
-        return _buildPresetsTab();
-      default:
-        return _buildColorTab();
-    }
+    return Column(
+      children: [
+        if (isLive) _buildLiveOverrideWarning(),
+        _buildQuickActionsRow(),
+        Expanded(
+          child: Builder(builder: (context) {
+            switch (_selectedIndex) {
+              case 0:
+                return _buildColorTab();
+              case 1:
+                return _buildPalettesTab();
+              case 2:
+                return _buildEffectsTab();
+              case 3:
+                return _buildPresetsTab();
+              default:
+                return _buildColorTab();
+            }
+          }),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildQuickActionsRow() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Row(
+        children: [
+          _buildQuickActionButton(
+            icon: isSyncOn ? Icons.sync : Icons.sync_disabled,
+            label: AppLocalizations.of(context)!.actionSync,
+            isActive: isSyncOn,
+            onPressed: _toggleSync,
+          ),
+          const SizedBox(width: 12),
+          _buildQuickActionButton(
+            icon: Icons.view_week,
+            label: AppLocalizations.of(context)!.actionSegments,
+            isActive: false,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SegmentsScreen(device: widget.device),
+                ),
+              );
+            },
+          ),
+          const SizedBox(width: 12),
+          _buildQuickActionButton(
+            icon: isTimerOn ? Icons.timer : Icons.timer_off_outlined,
+            label: AppLocalizations.of(context)!.actionTimer,
+            isActive: isTimerOn,
+            onPressed: _toggleTimer,
+          ),
+          const SizedBox(width: 12),
+          _buildQuickActionButton(
+            icon: Icons.settings,
+            label: AppLocalizations.of(context)!.actionSettings,
+            isActive: false,
+            onPressed: _openWebInterface,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuickActionButton({
+    required IconData icon,
+    required String label,
+    required bool isActive,
+    required VoidCallback onPressed,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Material(
+      color: isActive
+          ? colorScheme.primaryContainer
+          : colorScheme.surfaceContainerHigh,
+      borderRadius: BorderRadius.circular(16),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onPressed,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon,
+                  color: isActive
+                      ? colorScheme.onPrimaryContainer
+                      : colorScheme.onSurfaceVariant),
+              const SizedBox(height: 4),
+              Text(label,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: isActive
+                            ? colorScheme.onPrimaryContainer
+                            : colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w600,
+                      )),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildColorTab() {

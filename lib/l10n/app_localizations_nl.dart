@@ -90,6 +90,70 @@ class AppLocalizationsNl extends AppLocalizations {
   String get deviceUnreachable => 'Kon apparaat niet bereiken';
 
   @override
+  String get liveDataActive => 'Live Data Actief';
+
+  @override
+  String liveDataActiveDesc(String ip) {
+    return 'App-bediening is geblokkeerd door inkomende live data ($ip).';
+  }
+
+  @override
+  String get liveDataOverrideCategory => 'Live Data Overschrijven';
+
+  @override
+  String get liveDataOverrideToggle => 'Live Data Overschrijven';
+
+  @override
+  String get liveDataOverrideDescription =>
+      'Overschrijf live data (zoals E1.31, UDP, enz.) met de WLED UI regelaars.';
+
+  @override
+  String get liveDataOverrideOnce => 'Tijdelijk Oversturen';
+
+  @override
+  String get liveDataOverrideReboot => 'Oversturen tot Reboot';
+
+  @override
+  String get wifiSaveSuccess =>
+      'Configuratie opgeslagen! Herstart apparaat indien nodig.';
+
+  @override
+  String get wifiSaveError => 'Fout bij het opslaan van configuratie.';
+
+  @override
+  String get settingsTitle => 'Instellingen';
+
+  @override
+  String get settingsWifi => 'WiFi Instellingen';
+
+  @override
+  String get settingsLeds => 'LED Voorkeuren';
+
+  @override
+  String get settingsUi => 'Gebruikersinterface';
+
+  @override
+  String get settingsSync => 'Sync Interfaces';
+
+  @override
+  String get settingsTime => 'Tijd & Macro\'s';
+
+  @override
+  String get settingsSecurity => 'Beveiliging & Updates';
+
+  @override
+  String get actionSync => 'Sync';
+
+  @override
+  String get actionSegments => 'Segmenten';
+
+  @override
+  String get actionTimer => 'Timer';
+
+  @override
+  String get actionSettings => 'Instellingen';
+
+  @override
   String get colorTab => 'Kleur';
 
   @override
@@ -118,9 +182,6 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get selectDeviceToControl => 'Selecteer een lamp om te bedienen';
-
-  @override
-  String get settingsTitle => 'Instellingen';
 
   @override
   String get appearanceSection => 'Weergave';
@@ -209,7 +270,7 @@ class AppLocalizationsNl extends AppLocalizations {
       'Als het apparaat al op je netwerk zit.';
 
   @override
-  String get wifiSetupTitle => 'Wi-Fi Instellen';
+  String get wifiSetupTitle => 'WiFi Installatie';
 
   @override
   String get wifiSetupHeader => 'Thuisnetwerk Kiezen';
@@ -267,4 +328,102 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get saveStateAsPreset => 'Huidige staat opslaan als preset';
+
+  @override
+  String get wifiConnectToExisting => 'Verbinden met bestaand netwerk';
+
+  @override
+  String get wifiScan => 'Zoeken';
+
+  @override
+  String get wifiNetworkName => 'Netwerknaam (SSID, leeg om niet te verbinden)';
+
+  @override
+  String get wifiNetworkPassword => 'Netwerkwachtwoord';
+
+  @override
+  String get wifiStaticIp => 'Vast IP (laat op 0.0.0.0 voor DHCP)';
+
+  @override
+  String get wifiStaticGateway => 'Vaste gateway';
+
+  @override
+  String get wifiStaticSubnet => 'Vast subnetmasker';
+
+  @override
+  String get wifiDnsServer => 'DNS-serveradres';
+
+  @override
+  String get wifiMdnsAddress => 'mDNS-adres (leeg voor geen mDNS)';
+
+  @override
+  String wifiClientIp(Object ip) {
+    return 'Client IP: $ip';
+  }
+
+  @override
+  String get wifiConfigureAp => 'Toegangspunt (AP) configureren';
+
+  @override
+  String get wifiApSsid => 'AP SSID (leeg voor geen AP)';
+
+  @override
+  String get wifiHideApName => 'Verberg AP-naam';
+
+  @override
+  String get wifiApPassword => 'AP-wachtwoord (leeg voor open)';
+
+  @override
+  String get wifiApChannel => 'Toegangspunt WiFi-kanaal';
+
+  @override
+  String get wifiApBehavior => 'AP opent';
+
+  @override
+  String get wifiApBehaviorAlways => 'Altijd';
+
+  @override
+  String get wifiApBehaviorNoConnection => 'Geen verbinding na start';
+
+  @override
+  String get wifiApBehaviorDisconnected => 'Verbroken';
+
+  @override
+  String wifiApIp(Object ip) {
+    return 'AP IP: $ip';
+  }
+
+  @override
+  String get wifiExperimental => 'Experimenteel';
+
+  @override
+  String get wifiForce80211g => 'Forceer 802.11g modus (alleen ESP8266)';
+
+  @override
+  String get wifiDisableSleep => 'Schakel WiFi-slaapstand uit';
+
+  @override
+  String get wifiDisableSleepDesc =>
+      'Kan helpen bij verbindingsproblemen en Audioreactieve sync.\nHet uitschakelen verhoogt het stroomverbruik.';
+
+  @override
+  String get wifiEspNow => 'ESP-NOW Draadloos';
+
+  @override
+  String get wifiEnableEspNow => 'Schakel ESP-NOW in';
+
+  @override
+  String get wifiEnableEspNowDesc =>
+      'Luister naar commando\'s via ESP-NOW\nLaat dit uitgeschakeld als je geen afstandsbediening gebruikt o.w.v. stroomverbruik.';
+
+  @override
+  String get wifiPairedRemoteMac => 'Gekoppelde MAC';
+
+  @override
+  String wifiLastDeviceSeen(Object mac) {
+    return 'Laatst geziene apparaat: $mac';
+  }
+
+  @override
+  String get wifiSaveAndConnect => 'Opslaan & Verbinden';
 }

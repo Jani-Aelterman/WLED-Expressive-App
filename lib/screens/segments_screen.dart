@@ -51,6 +51,7 @@ class _SegmentsScreenState extends State<SegmentsScreen> {
           .toList();
     }
 
+    if (!mounted) return;
     setState(() {
       _isLoading = false;
     });

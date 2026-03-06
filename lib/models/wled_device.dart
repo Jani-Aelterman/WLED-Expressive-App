@@ -4,6 +4,8 @@ class WledDevice {
   bool isOnline;
   bool isOn;
   int brightness;
+  bool isLive;
+  String liveIp;
 
   WledDevice({
     required this.name,
@@ -11,6 +13,8 @@ class WledDevice {
     this.isOnline = false,
     this.isOn = false,
     this.brightness = 128,
+    this.isLive = false,
+    this.liveIp = "",
   });
 
   Map<String, dynamic> toJson() {
