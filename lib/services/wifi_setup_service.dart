@@ -94,6 +94,21 @@ class WifiSetupService {
       joinOnce: true,
       withInternet: false, // AP mode usually doesn't have internet
     );
+    if (connected && Platform.isAndroid) {
+      // Force Android to route traffic over this Wi-Fi network, even without internet
+      await WiFiForIoTPlugin.forceWifiUsage(true);
+      // Wait for DHCP to assign the 4.3.2.1 IP address
+      await Future.delayed(const Duration(seconds: 4));
+    }
+
     return connected;
+  }
+
+  // Disconnect and restore normal routing
+  static Future<void> disconnectFromAp() async {
+    if (Platform.isAndroid) {
+      await WiFiForIoTPlugin.forceWifiUsage(false);
+      await WiFiForIoTPlugin.disconnect();
+    }
   }
 }

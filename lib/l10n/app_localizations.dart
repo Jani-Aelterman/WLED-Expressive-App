@@ -260,6 +260,126 @@ abstract class AppLocalizations {
   /// **'Device unreachable'**
   String get deviceUnreachable;
 
+  /// No description provided for @liveDataActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Live Data Active'**
+  String get liveDataActive;
+
+  /// No description provided for @liveDataActiveDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'App controls are disabled while receiving live data ({ip}).'**
+  String liveDataActiveDesc(String ip);
+
+  /// No description provided for @liveDataOverrideCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Live Data Override'**
+  String get liveDataOverrideCategory;
+
+  /// No description provided for @liveDataOverrideToggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Live Data Override'**
+  String get liveDataOverrideToggle;
+
+  /// No description provided for @liveDataOverrideDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Override the live data (like E1.31, UDP, etc) with the WLED UI controls.'**
+  String get liveDataOverrideDescription;
+
+  /// No description provided for @liveDataOverrideOnce.
+  ///
+  /// In en, this message translates to:
+  /// **'Override Once'**
+  String get liveDataOverrideOnce;
+
+  /// No description provided for @liveDataOverrideReboot.
+  ///
+  /// In en, this message translates to:
+  /// **'Override until Reboot'**
+  String get liveDataOverrideReboot;
+
+  /// No description provided for @wifiSaveSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Configuration saved! Reboot device if necessary.'**
+  String get wifiSaveSuccess;
+
+  /// No description provided for @wifiSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error saving configuration.'**
+  String get wifiSaveError;
+
+  /// No description provided for @settingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settingsTitle;
+
+  /// No description provided for @settingsWifi.
+  ///
+  /// In en, this message translates to:
+  /// **'WiFi Setup'**
+  String get settingsWifi;
+
+  /// No description provided for @settingsLeds.
+  ///
+  /// In en, this message translates to:
+  /// **'LED Preferences'**
+  String get settingsLeds;
+
+  /// No description provided for @settingsUi.
+  ///
+  /// In en, this message translates to:
+  /// **'User Interface'**
+  String get settingsUi;
+
+  /// No description provided for @settingsSync.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync Interfaces'**
+  String get settingsSync;
+
+  /// No description provided for @settingsTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Time & Macros'**
+  String get settingsTime;
+
+  /// No description provided for @settingsSecurity.
+  ///
+  /// In en, this message translates to:
+  /// **'Security & Updates'**
+  String get settingsSecurity;
+
+  /// No description provided for @actionSync.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync'**
+  String get actionSync;
+
+  /// No description provided for @actionSegments.
+  ///
+  /// In en, this message translates to:
+  /// **'Segments'**
+  String get actionSegments;
+
+  /// No description provided for @actionTimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Timer'**
+  String get actionTimer;
+
+  /// No description provided for @actionSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get actionSettings;
+
   /// No description provided for @colorTab.
   ///
   /// In en, this message translates to:
@@ -319,12 +439,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select a light to control'**
   String get selectDeviceToControl;
-
-  /// No description provided for @settingsTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Settings'**
-  String get settingsTitle;
 
   /// No description provided for @appearanceSection.
   ///
@@ -485,7 +599,7 @@ abstract class AppLocalizations {
   /// No description provided for @wifiSetupTitle.
   ///
   /// In en, this message translates to:
-  /// **'Wi-Fi Setup'**
+  /// **'WiFi Setup'**
   String get wifiSetupTitle;
 
   /// No description provided for @wifiSetupHeader.
@@ -595,6 +709,186 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save current state as preset'**
   String get saveStateAsPreset;
+
+  /// No description provided for @wifiConnectToExisting.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to existing network'**
+  String get wifiConnectToExisting;
+
+  /// No description provided for @wifiScan.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan'**
+  String get wifiScan;
+
+  /// No description provided for @wifiNetworkName.
+  ///
+  /// In en, this message translates to:
+  /// **'Network name (SSID, empty to not connect)'**
+  String get wifiNetworkName;
+
+  /// No description provided for @wifiNetworkPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Network password'**
+  String get wifiNetworkPassword;
+
+  /// No description provided for @wifiStaticIp.
+  ///
+  /// In en, this message translates to:
+  /// **'Static IP (leave at 0.0.0.0 for DHCP)'**
+  String get wifiStaticIp;
+
+  /// No description provided for @wifiStaticGateway.
+  ///
+  /// In en, this message translates to:
+  /// **'Static gateway'**
+  String get wifiStaticGateway;
+
+  /// No description provided for @wifiStaticSubnet.
+  ///
+  /// In en, this message translates to:
+  /// **'Static subnet mask'**
+  String get wifiStaticSubnet;
+
+  /// No description provided for @wifiDnsServer.
+  ///
+  /// In en, this message translates to:
+  /// **'DNS server address'**
+  String get wifiDnsServer;
+
+  /// No description provided for @wifiMdnsAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'mDNS address (leave empty for no mDNS)'**
+  String get wifiMdnsAddress;
+
+  /// No description provided for @wifiClientIp.
+  ///
+  /// In en, this message translates to:
+  /// **'Client IP: {ip}'**
+  String wifiClientIp(Object ip);
+
+  /// No description provided for @wifiConfigureAp.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure Access Point'**
+  String get wifiConfigureAp;
+
+  /// No description provided for @wifiApSsid.
+  ///
+  /// In en, this message translates to:
+  /// **'AP SSID (leave empty for no AP)'**
+  String get wifiApSsid;
+
+  /// No description provided for @wifiHideApName.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide AP name'**
+  String get wifiHideApName;
+
+  /// No description provided for @wifiApPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'AP password (leave empty for open)'**
+  String get wifiApPassword;
+
+  /// No description provided for @wifiApChannel.
+  ///
+  /// In en, this message translates to:
+  /// **'Access Point WiFi channel'**
+  String get wifiApChannel;
+
+  /// No description provided for @wifiApBehavior.
+  ///
+  /// In en, this message translates to:
+  /// **'AP opens'**
+  String get wifiApBehavior;
+
+  /// No description provided for @wifiApBehaviorAlways.
+  ///
+  /// In en, this message translates to:
+  /// **'Always'**
+  String get wifiApBehaviorAlways;
+
+  /// No description provided for @wifiApBehaviorNoConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'No connection after boot'**
+  String get wifiApBehaviorNoConnection;
+
+  /// No description provided for @wifiApBehaviorDisconnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnected'**
+  String get wifiApBehaviorDisconnected;
+
+  /// No description provided for @wifiApIp.
+  ///
+  /// In en, this message translates to:
+  /// **'AP IP: {ip}'**
+  String wifiApIp(Object ip);
+
+  /// No description provided for @wifiExperimental.
+  ///
+  /// In en, this message translates to:
+  /// **'Experimental'**
+  String get wifiExperimental;
+
+  /// No description provided for @wifiForce80211g.
+  ///
+  /// In en, this message translates to:
+  /// **'Force 802.11g mode (ESP8266 only)'**
+  String get wifiForce80211g;
+
+  /// No description provided for @wifiDisableSleep.
+  ///
+  /// In en, this message translates to:
+  /// **'Disable WiFi sleep'**
+  String get wifiDisableSleep;
+
+  /// No description provided for @wifiDisableSleepDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Can help with connectivity issues and Audioreactive sync.\nDisabling WiFi sleep increases power consumption.'**
+  String get wifiDisableSleepDesc;
+
+  /// No description provided for @wifiEspNow.
+  ///
+  /// In en, this message translates to:
+  /// **'ESP-NOW Wireless'**
+  String get wifiEspNow;
+
+  /// No description provided for @wifiEnableEspNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable ESP-NOW'**
+  String get wifiEnableEspNow;
+
+  /// No description provided for @wifiEnableEspNowDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Listen for events over ESP-NOW\nKeep disabled if not using a remote or wireless sync, increases power consumption.'**
+  String get wifiEnableEspNowDesc;
+
+  /// No description provided for @wifiPairedRemoteMac.
+  ///
+  /// In en, this message translates to:
+  /// **'Paired Remote MAC'**
+  String get wifiPairedRemoteMac;
+
+  /// No description provided for @wifiLastDeviceSeen.
+  ///
+  /// In en, this message translates to:
+  /// **'Last device seen: {mac}'**
+  String wifiLastDeviceSeen(Object mac);
+
+  /// No description provided for @wifiSaveAndConnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Save & Connect'**
+  String get wifiSaveAndConnect;
 }
 
 class _AppLocalizationsDelegate

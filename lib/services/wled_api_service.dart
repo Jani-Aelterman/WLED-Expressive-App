@@ -193,18 +193,21 @@ class WledApiService {
     }
   }
 
-  static Future<Map<String, dynamic>?> getPresets(String ip) async {
+  static Future<Map<String, dynamic>?> getPresets(String ip,
+      {bool forceRefresh = false}) async {
     final prefs = await SharedPreferences.getInstance();
     final cacheKey = 'wled_presets_$ip';
 
-    // 1. Try to get from cache first
-    final cachedPresetsStr = prefs.getString(cacheKey);
     Map<String, dynamic>? cachedPresets;
-    if (cachedPresetsStr != null) {
-      try {
-        cachedPresets = jsonDecode(cachedPresetsStr);
-      } catch (e) {
-        // Cache corrupted, ignore
+    if (!forceRefresh) {
+      // 1. Try to get from cache first
+      final cachedPresetsStr = prefs.getString(cacheKey);
+      if (cachedPresetsStr != null) {
+        try {
+          cachedPresets = jsonDecode(cachedPresetsStr);
+        } catch (e) {
+          // Cache corrupted, ignore
+        }
       }
     }
 
@@ -242,6 +245,53 @@ class WledApiService {
             Uri.parse('http://$ip/json/state'),
             headers: {"Content-Type": "application/json"},
             body: jsonEncode({"ps": presetId}),
+          )
+          .timeout(const Duration(seconds: 2));
+      return response.statusCode == 200;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  static Future<Map<String, dynamic>?> getDeviceConfig(String ip) async {
+    try {
+      final response = await http
+          .get(Uri.parse('http://$ip/json/cfg'))
+          .timeout(const Duration(seconds: 4));
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      return null;
+    }
+  }
+
+  static Future<bool> setDeviceConfig(
+      String ip, Map<String, dynamic> config) async {
+    try {
+      final response = await http
+          .post(
+            Uri.parse('http://$ip/json/cfg'),
+            headers: {"Content-Type": "application/json"},
+            body: jsonEncode(config),
+          )
+          .timeout(const Duration(seconds: 3));
+      return response.statusCode == 200;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  static Future<bool> setLiveOverride(String ip, int lorMode) async {
+    try {
+      final response = await http
+          .post(
+            Uri.parse('http://$ip/json/state'),
+            headers: {"Content-Type": "application/json"},
+            body: jsonEncode({"lor": lorMode}),
           )
           .timeout(const Duration(seconds: 2));
       return response.statusCode == 200;
@@ -292,7 +342,7 @@ class WledApiService {
             headers: {"Content-Type": "application/json"},
             body: jsonEncode({"psave": presetId, "n": name}),
           )
-          .timeout(const Duration(seconds: 2));
+          .timeout(const Duration(seconds: 4));
       return response.statusCode == 200;
     } catch (e) {
       return false;

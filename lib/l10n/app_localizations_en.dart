@@ -90,6 +90,70 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deviceUnreachable => 'Device unreachable';
 
   @override
+  String get liveDataActive => 'Live Data Active';
+
+  @override
+  String liveDataActiveDesc(String ip) {
+    return 'App controls are disabled while receiving live data ($ip).';
+  }
+
+  @override
+  String get liveDataOverrideCategory => 'Live Data Override';
+
+  @override
+  String get liveDataOverrideToggle => 'Live Data Override';
+
+  @override
+  String get liveDataOverrideDescription =>
+      'Override the live data (like E1.31, UDP, etc) with the WLED UI controls.';
+
+  @override
+  String get liveDataOverrideOnce => 'Override Once';
+
+  @override
+  String get liveDataOverrideReboot => 'Override until Reboot';
+
+  @override
+  String get wifiSaveSuccess =>
+      'Configuration saved! Reboot device if necessary.';
+
+  @override
+  String get wifiSaveError => 'Error saving configuration.';
+
+  @override
+  String get settingsTitle => 'Settings';
+
+  @override
+  String get settingsWifi => 'WiFi Setup';
+
+  @override
+  String get settingsLeds => 'LED Preferences';
+
+  @override
+  String get settingsUi => 'User Interface';
+
+  @override
+  String get settingsSync => 'Sync Interfaces';
+
+  @override
+  String get settingsTime => 'Time & Macros';
+
+  @override
+  String get settingsSecurity => 'Security & Updates';
+
+  @override
+  String get actionSync => 'Sync';
+
+  @override
+  String get actionSegments => 'Segments';
+
+  @override
+  String get actionTimer => 'Timer';
+
+  @override
+  String get actionSettings => 'Settings';
+
+  @override
   String get colorTab => 'Color';
 
   @override
@@ -118,9 +182,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get selectDeviceToControl => 'Select a light to control';
-
-  @override
-  String get settingsTitle => 'Settings';
 
   @override
   String get appearanceSection => 'Appearance';
@@ -209,7 +270,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'If the device is already on your network.';
 
   @override
-  String get wifiSetupTitle => 'Wi-Fi Setup';
+  String get wifiSetupTitle => 'WiFi Setup';
 
   @override
   String get wifiSetupHeader => 'Choose Home Network';
@@ -267,4 +328,102 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get saveStateAsPreset => 'Save current state as preset';
+
+  @override
+  String get wifiConnectToExisting => 'Connect to existing network';
+
+  @override
+  String get wifiScan => 'Scan';
+
+  @override
+  String get wifiNetworkName => 'Network name (SSID, empty to not connect)';
+
+  @override
+  String get wifiNetworkPassword => 'Network password';
+
+  @override
+  String get wifiStaticIp => 'Static IP (leave at 0.0.0.0 for DHCP)';
+
+  @override
+  String get wifiStaticGateway => 'Static gateway';
+
+  @override
+  String get wifiStaticSubnet => 'Static subnet mask';
+
+  @override
+  String get wifiDnsServer => 'DNS server address';
+
+  @override
+  String get wifiMdnsAddress => 'mDNS address (leave empty for no mDNS)';
+
+  @override
+  String wifiClientIp(Object ip) {
+    return 'Client IP: $ip';
+  }
+
+  @override
+  String get wifiConfigureAp => 'Configure Access Point';
+
+  @override
+  String get wifiApSsid => 'AP SSID (leave empty for no AP)';
+
+  @override
+  String get wifiHideApName => 'Hide AP name';
+
+  @override
+  String get wifiApPassword => 'AP password (leave empty for open)';
+
+  @override
+  String get wifiApChannel => 'Access Point WiFi channel';
+
+  @override
+  String get wifiApBehavior => 'AP opens';
+
+  @override
+  String get wifiApBehaviorAlways => 'Always';
+
+  @override
+  String get wifiApBehaviorNoConnection => 'No connection after boot';
+
+  @override
+  String get wifiApBehaviorDisconnected => 'Disconnected';
+
+  @override
+  String wifiApIp(Object ip) {
+    return 'AP IP: $ip';
+  }
+
+  @override
+  String get wifiExperimental => 'Experimental';
+
+  @override
+  String get wifiForce80211g => 'Force 802.11g mode (ESP8266 only)';
+
+  @override
+  String get wifiDisableSleep => 'Disable WiFi sleep';
+
+  @override
+  String get wifiDisableSleepDesc =>
+      'Can help with connectivity issues and Audioreactive sync.\nDisabling WiFi sleep increases power consumption.';
+
+  @override
+  String get wifiEspNow => 'ESP-NOW Wireless';
+
+  @override
+  String get wifiEnableEspNow => 'Enable ESP-NOW';
+
+  @override
+  String get wifiEnableEspNowDesc =>
+      'Listen for events over ESP-NOW\nKeep disabled if not using a remote or wireless sync, increases power consumption.';
+
+  @override
+  String get wifiPairedRemoteMac => 'Paired Remote MAC';
+
+  @override
+  String wifiLastDeviceSeen(Object mac) {
+    return 'Last device seen: $mac';
+  }
+
+  @override
+  String get wifiSaveAndConnect => 'Save & Connect';
 }
