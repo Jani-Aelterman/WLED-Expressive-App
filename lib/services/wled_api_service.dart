@@ -193,18 +193,21 @@ class WledApiService {
     }
   }
 
-  static Future<Map<String, dynamic>?> getPresets(String ip) async {
+  static Future<Map<String, dynamic>?> getPresets(String ip,
+      {bool forceRefresh = false}) async {
     final prefs = await SharedPreferences.getInstance();
     final cacheKey = 'wled_presets_$ip';
 
-    // 1. Try to get from cache first
-    final cachedPresetsStr = prefs.getString(cacheKey);
     Map<String, dynamic>? cachedPresets;
-    if (cachedPresetsStr != null) {
-      try {
-        cachedPresets = jsonDecode(cachedPresetsStr);
-      } catch (e) {
-        // Cache corrupted, ignore
+    if (!forceRefresh) {
+      // 1. Try to get from cache first
+      final cachedPresetsStr = prefs.getString(cacheKey);
+      if (cachedPresetsStr != null) {
+        try {
+          cachedPresets = jsonDecode(cachedPresetsStr);
+        } catch (e) {
+          // Cache corrupted, ignore
+        }
       }
     }
 
@@ -339,7 +342,7 @@ class WledApiService {
             headers: {"Content-Type": "application/json"},
             body: jsonEncode({"psave": presetId, "n": name}),
           )
-          .timeout(const Duration(seconds: 2));
+          .timeout(const Duration(seconds: 4));
       return response.statusCode == 200;
     } catch (e) {
       return false;

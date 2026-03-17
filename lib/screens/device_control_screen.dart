@@ -88,8 +88,9 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
     }
   }
 
-  Future<void> _fetchPresets() async {
-    final fetchedPresets = await WledApiService.getPresets(widget.device.ip);
+  Future<void> _fetchPresets({bool forceRefresh = false}) async {
+    final fetchedPresets = await WledApiService.getPresets(widget.device.ip,
+        forceRefresh: forceRefresh);
     if (mounted) {
       setState(() {
         // Filter out the "0" preset which is usually just a placeholder or empty
@@ -398,7 +399,7 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
                 });
                 await WledApiService.savePreset(
                     widget.device.ip, nextId, nameController.text);
-                await _fetchPresets();
+                await _fetchPresets(forceRefresh: true);
               }
             },
             child: Text(AppLocalizations.of(context)!.save),

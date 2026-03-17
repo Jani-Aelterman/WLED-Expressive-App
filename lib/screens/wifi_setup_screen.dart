@@ -1,7 +1,13 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'dart:async';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:wled_expressive/l10n/app_localizations.dart';
+import 'package:loading_indicator_m3e/loading_indicator_m3e.dart';
+import 'package:wifi_scan/wifi_scan.dart';
+import 'package:permission_handler/permission_handler.dart';
+import '../services/wifi_setup_service.dart';
 
 class WifiSetupScreen extends StatefulWidget {
   final String deviceIp; // Should be '4.3.2.1' in AP mode
@@ -17,11 +23,38 @@ class _WifiSetupScreenState extends State<WifiSetupScreen> {
   final _pskController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
+  bool _obscurePassword = true;
+  bool _isScanning = false;
+  List<String> _scannedNetworks = [];
+
+  Future<void> _startScan() async {
+    final status = await Permission.location.request();
+    if (status.isGranted) {
+      final canScan =
+          await WiFiScan.instance.canStartScan(askPermissions: true);
+      if (canScan == CanStartScan.yes) {
+        setState(() => _isScanning = true);
+        await WiFiScan.instance.startScan();
+        final results = await WiFiScan.instance.getScannedResults();
+        if (mounted) {
+          setState(() {
+            _scannedNetworks = results
+                .map((r) => r.ssid)
+                .where((s) => s.isNotEmpty)
+                .toSet()
+                .toList();
+            _isScanning = false;
+          });
+        }
+      }
+    }
+  }
 
   @override
   void dispose() {
     _ssidController.dispose();
     _pskController.dispose();
+    WifiSetupService.disconnectFromAp(); // Release the forced AP network
     super.dispose();
   }
 
@@ -45,24 +78,35 @@ class _WifiSetupScreenState extends State<WifiSetupScreen> {
         }
       });
 
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: payload,
-      );
+      final response = await http
+          .post(
+            url,
+            headers: {'Content-Type': 'application/json'},
+            body: payload,
+          )
+          .timeout(const Duration(seconds: 4));
+
+      try {
+        await http
+            .post(
+              Uri.parse('http://${widget.deviceIp}/json/state'),
+              headers: {'Content-Type': 'application/json'},
+              body: jsonEncode({"rb": true}),
+            )
+            .timeout(const Duration(seconds: 1));
+      } catch (_) {}
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Wi-Fi instellingen opgeslagen! Verbinden...')),
-          );
-          // Go back to the device list
-          Navigator.of(context).pop();
-        }
+        _showSuccessAndPop();
       } else {
         throw Exception('Server gaf foutcode ${response.statusCode}');
       }
+    } on TimeoutException {
+      // WLED drops the AP connection immediately to apply settings, so a timeout is usually success
+      _showSuccessAndPop();
+    } on SocketException {
+      // Same here, the socket closes abruptly when the AP goes down
+      _showSuccessAndPop();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -77,6 +121,17 @@ class _WifiSetupScreenState extends State<WifiSetupScreen> {
           _isLoading = false;
         });
       }
+    }
+  }
+
+  void _showSuccessAndPop() {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Wi-Fi instellingen opgeslagen! Verbinden...')),
+      );
+      // Go back to the device list
+      Navigator.of(context).pop();
     }
   }
 
@@ -127,6 +182,20 @@ class _WifiSetupScreenState extends State<WifiSetupScreen> {
                   labelText:
                       AppLocalizations.of(context)!.wifiSetupNetworkLabel,
                   prefixIcon: const Icon(Icons.wifi),
+                  suffixIcon: _isScanning
+                      ? const Padding(
+                          padding: EdgeInsets.all(12.0),
+                          child: SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        )
+                      : IconButton(
+                          icon: const Icon(Icons.search),
+                          tooltip: 'Scan voor netwerken',
+                          onPressed: _startScan,
+                        ),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16)),
                 ),
@@ -137,6 +206,23 @@ class _WifiSetupScreenState extends State<WifiSetupScreen> {
                   return null;
                 },
               ),
+              if (_scannedNetworks.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  children: _scannedNetworks.map((ssid) {
+                    return ActionChip(
+                      label: Text(ssid),
+                      onPressed: () {
+                        _ssidController.text = ssid;
+                        setState(() {
+                          _scannedNetworks.clear();
+                        });
+                      },
+                    );
+                  }).toList(),
+                ),
+              ],
               const SizedBox(height: 16),
               TextFormField(
                 controller: _pskController,
@@ -144,14 +230,24 @@ class _WifiSetupScreenState extends State<WifiSetupScreen> {
                   labelText:
                       AppLocalizations.of(context)!.wifiSetupPasswordLabel,
                   prefixIcon: const Icon(Icons.lock),
+                  suffixIcon: IconButton(
+                    icon: Icon(_obscurePassword
+                        ? Icons.visibility
+                        : Icons.visibility_off),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  ),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16)),
                 ),
-                obscureText: true,
+                obscureText: _obscurePassword,
               ),
               const SizedBox(height: 32),
               if (_isLoading)
-                const Center(child: CircularProgressIndicator())
+                const Center(child: LoadingIndicatorM3E())
               else
                 FilledButton.icon(
                   onPressed: _saveWifi,
